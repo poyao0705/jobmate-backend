@@ -238,7 +238,7 @@ class CareerEngine:
         # 2.5) Persist strategy configuration
         self._persist_strategy_config(resume.processing_run_id)
 
-        # 2.6) Capture mapping diagnostics
+        # 2.6) Log mapping diagnostics (for debugging, not included in result)
         mapping_diagnostics = self.mapper.get_last_mapping_diagnostics()
         logger.info(
             f"Mapping diagnostics: {mapping_diagnostics.get('total_accepted')} accepted, "
@@ -258,6 +258,13 @@ class CareerEngine:
             if (skill.get("match") or {}).get("skill_type") == "skill"
         ]
         result["resume_skills"] = resume_skills
+
+        # Extract underqualified skills for backward compatibility with DB schema
+        underqualified = [
+            skill
+            for skill in result.get("matched_skills", [])
+            if skill.get("status") == "underqualified"
+        ]
 
         logger.info(
             f"[RESUME_SKILLS] CareerEngine.analyze: Extracted {len(resume_skills)} resume skills "
@@ -281,7 +288,7 @@ class CareerEngine:
                 job_listing_id=job_listing.id if job_listing else None,
                 matched_skills_json=result["matched_skills"],
                 missing_skills_json=result["missing_skills"],
-                weak_skills_json=result.get("underqualified"),
+                weak_skills_json=underqualified,
                 resume_skills_json=result["resume_skills"],
                 score=result["overall_match"],
                 processing_run_id=resume.processing_run_id,
@@ -319,7 +326,6 @@ class CareerEngine:
 
         result["analysis_id"] = rec_id
         result["report_md"] = self.renderer.render(result)
-        result["mapping_diagnostics"] = mapping_diagnostics
         logger.info(
             f"[GAP] CareerEngine.analyze: end resume_id={resume_id}, job_id={job_id}, analysis_id={rec_id}"
         )

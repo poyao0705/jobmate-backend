@@ -183,26 +183,39 @@ def get_gap_report_by_job(job_id: int):
         missing_skills = rec.missing_skills_json or []
         underqualified = rec.weak_skills_json or []
 
-        # Reconstruct fields needed by report renderer from stored data
-        # Split matched_skills into underqualified and meets_or_exceeds based on level_delta
+        # Reconstruct status flags from stored data for backward compatibility
+        # Add status field to matched_skills
         from jobmate_agent.services.career_engine.config import config
 
         level_grace = config.score_weights.level_grace
+        underqualified_ids = {
+            (m.get("match") or {}).get("skill_id")
+            for m in underqualified
+            if (m.get("match") or {}).get("skill_id")
+        }
 
-        # Separate underqualified from meets_or_exceeds (they're already stored separately but check level_delta too)
-        meets_or_exceeds = [
-            m
-            for m in matched_skills
-            if m not in underqualified and (m.get("level_delta") or 0) <= level_grace
-        ]
+        for m in matched_skills:
+            # If status already exists (new format), keep it
+            if "status" not in m:
+                skill_id = (m.get("match") or {}).get("skill_id")
+                if skill_id in underqualified_ids:
+                    m["status"] = "underqualified"
+                else:
+                    level_delta = m.get("level_delta") or 0
+                    if level_delta > level_grace:
+                        m["status"] = "underqualified"
+                    else:
+                        m["status"] = "meets_or_exceeds"
 
-        # Extract hot_missing and indemand_missing from missing_skills
-        hot_missing = [
-            m for m in missing_skills if (m.get("match") or {}).get("hot_tech")
-        ]
-        indemand_missing = [
-            m for m in missing_skills if (m.get("match") or {}).get("in_demand")
-        ]
+        # Add flags to missing_skills
+        for m in missing_skills:
+            # If flags already exist (new format), keep them
+            if "is_hot_tech" not in m:
+                match_obj = m.get("match") or {}
+                m["is_hot_tech"] = bool(match_obj.get("hot_tech"))
+            if "is_in_demand" not in m:
+                match_obj = m.get("match") or {}
+                m["is_in_demand"] = bool(match_obj.get("in_demand"))
 
         logger.debug(
             f"[RESUME_SKILLS] get_gap_report_by_job: Preparing render_payload with "
@@ -214,11 +227,6 @@ def get_gap_report_by_job(job_id: int):
             "overall_match": rec.score,
             "matched_skills": matched_skills,
             "missing_skills": missing_skills,
-            "nice_to_have": [],  # Not used in renderer
-            "hot_missing": hot_missing,
-            "indemand_missing": indemand_missing,
-            "underqualified": underqualified,
-            "meets_or_exceeds": meets_or_exceeds,
             "resume_skills": resume_skills,
         }
         report_md = renderer.render(render_payload)
@@ -229,13 +237,14 @@ def get_gap_report_by_job(job_id: int):
             f"contains 'Skills Detected'={('Skills Detected' in report_md)}"
         )
 
+        # Return the modified arrays (with status flags) instead of raw DB JSON
         resp = {
             "exists": True,
             "id": rec.id,
             "score": rec.score,
-            "matched_skills": rec.matched_skills_json,
-            "missing_skills": rec.missing_skills_json,
-            "weak_skills": rec.weak_skills_json,
+            "matched_skills": matched_skills,  # Modified with status flags
+            "missing_skills": missing_skills,  # Modified with is_hot_tech/is_in_demand flags
+            "weak_skills": rec.weak_skills_json,  # Keep original for backward compatibility
             "resume_skills": resume_skills,
             "report_md": report_md,
         }

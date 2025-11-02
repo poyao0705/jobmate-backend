@@ -92,13 +92,32 @@ class ReportRenderer:
                 lines.append(skill_line)
             lines.append("")
 
+        # Get missing and matched skills
+        missing_skills = result.get("missing_skills", [])
+        matched_skills = result.get("matched_skills", [])
+
         # Show missing skills first (most critical)
-        _section("Missing Skills", result.get("missing_skills", []))
-        _section("Hot Tech Missing", result.get("hot_missing", []))
-        _section("In-demand Missing", result.get("indemand_missing", []))
+        _section("Missing Skills", missing_skills)
+
+        # Filter and show hot tech missing
+        hot_missing = [s for s in missing_skills if s.get("is_hot_tech")]
+        if hot_missing:
+            _section("Hot Tech Missing", hot_missing)
+
+        # Filter and show in-demand missing
+        indemand_missing = [s for s in missing_skills if s.get("is_in_demand")]
+        if indemand_missing:
+            _section("In-demand Missing", indemand_missing)
+
+        # Filter matched skills by status
+        underqualified = [
+            s for s in matched_skills if s.get("status") == "underqualified"
+        ]
+        meets_or_exceeds = [
+            s for s in matched_skills if s.get("status") == "meets_or_exceeds"
+        ]
 
         # Show underqualified skills (present but below required level)
-        underqualified = result.get("underqualified", [])
         if underqualified:
             _section(
                 "Underqualified Skills (Present but Below Required Level)",
@@ -107,23 +126,31 @@ class ReportRenderer:
             )
 
         # Show skills that meet or exceed requirements
-        meets_or_exceeds = result.get("meets_or_exceeds", [])
         if meets_or_exceeds:
             _section("Skills Meeting Requirements", meets_or_exceeds, show_levels=True)
 
-        # Show all matched skills for completeness
-        matched_skills = result.get("matched_skills", [])
-        if matched_skills and not (underqualified or meets_or_exceeds):
+        # Show all matched skills for completeness (only if status fields not set)
+        if matched_skills and not underqualified and not meets_or_exceeds:
             _section("Matched Skills", matched_skills, show_levels=True)
 
-        # Note: Resume skills are now displayed as a React component in the frontend
-        # (not in the markdown report to avoid duplication)
-        # The resume_skills are still included in the API response for the React component
+        # Show all resume skills
         resume_skills = result.get("resume_skills", [])
         if resume_skills:
-            logger.debug(
-                f"[RESUME_SKILLS] ReportRenderer.render: resume_skills provided ({len(resume_skills)} skills) "
-                "but not rendering in markdown - will be displayed as React component in frontend"
+            # Deduplicate skills by skill_id to avoid showing the same skill multiple times
+            seen_skill_ids = set()
+            unique_resume_skills = []
+            for skill in resume_skills:
+                skill_id = (skill.get("match") or {}).get("skill_id")
+                if skill_id and skill_id not in seen_skill_ids:
+                    seen_skill_ids.add(skill_id)
+                    unique_resume_skills.append(skill)
+                elif not skill_id:  # Include skills without IDs
+                    unique_resume_skills.append(skill)
+
+            _section(
+                "Resume Skills (All Detected Skills)",
+                unique_resume_skills,
+                show_levels=True,
             )
 
         return "\n".join(lines)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from .config import config
 
@@ -34,7 +34,7 @@ class GapAnalyzer:
             if mid:
                 r_by_id[mid] = m
 
-        matched, missing, nice = [], [], []
+        matched, missing = [], []
 
         # Partition JD skills by presence in resume
         for jm in job_skills:
@@ -60,6 +60,10 @@ class GapAnalyzer:
                     f"JD score: {jm.get('score')}, Resume score: {rm.get('score')}"
                 )
             else:
+                # Add flags for hot tech and in-demand status
+                match_obj = jm.get("match") or {}
+                jm["is_hot_tech"] = bool(match_obj.get("hot_tech"))
+                jm["is_in_demand"] = bool(match_obj.get("in_demand"))
                 missing.append(jm)
                 logger.debug(
                     f"MISSING: {jm.get('match', {}).get('name')} - JD score: {jm.get('score')}"
@@ -76,54 +80,22 @@ class GapAnalyzer:
                 match = m.get("match", {})
                 logger.debug(f"  - {match.get('name')}: score={m.get('score')}")
 
-        # Boil down hot/in-demand subsets among missing
-        hot_missing = [m for m in missing if (m.get("match") or {}).get("hot_tech")]
-        ind_missing = [m for m in missing if (m.get("match") or {}).get("in_demand")]
+        # Calculate score (no rationale needed)
+        score = self._score(matched, missing)
 
-        score, rationale = self._score(matched, missing, hot_missing, ind_missing)
-
-        # Identify underqualified (present but below required level)
+        # Add status field to matched skills based on level qualification
         level_grace = config.score_weights.level_grace
-        underqualified = [
-            m for m in matched if (m.get("level_delta") or 0) > level_grace
-        ]
-        meets_or_exceeds = [
-            m for m in matched if (m.get("level_delta") or 0) <= level_grace
-        ]
-
-        # Optional: generate a brief textual rationale via LLM
-        llm_note = (
-            self._llm_rationale(matched, missing, underqualified) if self.llm else None
-        )
-        if llm_note:
-            rationale += f" {llm_note}"
-
-        # Include all items (skills + tasks) for narrative context, but only skills counted in score
-        all_matched = [
-            m
-            for m in resume_map
-            if (m.get("match") or {}).get("skill_id")
-            in [rm.get("match", {}).get("skill_id") for rm in matched]
-        ]
-        all_missing = [
-            m
-            for m in job_map
-            if (m.get("match") or {}).get("skill_id")
-            not in [rm.get("match", {}).get("skill_id") for rm in matched]
-        ]
+        for m in matched:
+            level_delta = m.get("level_delta") or 0
+            if level_delta > level_grace:
+                m["status"] = "underqualified"
+            else:
+                m["status"] = "meets_or_exceeds"
 
         return {
             "overall_match": score,
-            "rationale": rationale,
             "matched_skills": matched,  # Skills only (used for scoring)
             "missing_skills": missing,  # Skills only (used for scoring)
-            "matched_all": all_matched,  # All items (skills + tasks) for narrative
-            "missing_all": all_missing,  # All items (skills + tasks) for narrative
-            "nice_to_have": nice,
-            "hot_missing": hot_missing,
-            "indemand_missing": ind_missing,
-            "underqualified": underqualified,  # present but below required level
-            "meets_or_exceeds": meets_or_exceeds,  # present and meets/exceeds
         }
 
     def _level_delta(self, cand: Dict[str, Any], req: Dict[str, Any]) -> float:
@@ -136,9 +108,7 @@ class GapAnalyzer:
         self,
         matched: List[Dict[str, Any]],
         missing: List[Dict[str, Any]],
-        hot_missing: List[Dict[str, Any]],
-        ind_missing: List[Dict[str, Any]],
-    ) -> Tuple[float, str]:
+    ) -> float:
         # Use configuration weights
         weights = config.score_weights
 
@@ -170,18 +140,9 @@ class GapAnalyzer:
         #     level_pen += w * d
 
         raw = coverage - pen_missing - level_pen
-        return round(max(0.0, min(10.0, raw)), 2), "Level-aware coverage score (0–10)."
+        return round(max(0.0, min(10.0, raw)), 2)
 
     def _is_skill(self, m: Dict[str, Any]) -> bool:
         """Check if a mapped item is a skill (not a task)."""
         return (m.get("match") or {}).get("skill_type") == "skill"
 
-    def _llm_rationale(self, matched, missing, underqualified) -> str:
-        try:
-            top_u = sorted(
-                underqualified, key=lambda m: m.get("level_delta", 0), reverse=True
-            )[:3]
-            names = [(m.get("match") or {}).get("skill_id", "") for m in top_u]
-            return f"Key underqualified: {', '.join(n for n in names if n)}."
-        except Exception:
-            return ""
