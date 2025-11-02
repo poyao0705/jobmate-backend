@@ -421,6 +421,8 @@ class SkillGapReport(db.Model):
     )  # [{skill_id, match, candidate_level, score}] - all detected resume skills with levels
 
     score = db.Column(db.Float, nullable=False)  # 0-100 overall match score
+    analysis_version = db.Column(db.String, nullable=True)
+    analysis_json = db.Column(db.JSON, nullable=True)
     report_note_id = db.Column(db.Integer, db.ForeignKey("notes.id"), nullable=True)
     processing_run_id = db.Column(
         db.Integer, db.ForeignKey("processing_runs.id"), nullable=False

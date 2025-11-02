@@ -6,6 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from jobmate_agent.models import Resume, JobListing
 from jobmate_agent.services.career_engine import get_career_engine
 from jobmate_agent.services.career_engine.config import config
+from jobmate_agent.services.career_engine.schemas import GapAnalysisResult
 from langchain_openai import ChatOpenAI
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class GapState(TypedDict, total=False):
     job_id: int
     resume_id: Optional[int]
     result: Dict[str, Any]
+    analysis: GapAnalysisResult
     error: str
 
 
@@ -101,10 +103,27 @@ def run_career_engine(state: GapState) -> GapState:
         llm_client = None
     engine = get_career_engine(use_real_llm=llm_client is not None, llm=llm_client)
     result = engine.analyze_resume_vs_job(resume_id=resume_id, job_id=job_id)
-    logger.info(
-        f"[GAP] run_career_engine: analysis finished overall_match={result.get('overall_match')} analysis_id={result.get('analysis_id')}"
+    analysis_payload = result.get("analysis")
+    analysis_obj: GapAnalysisResult | None = None
+    if isinstance(analysis_payload, dict):
+        try:
+            analysis_obj = GapAnalysisResult(**analysis_payload)
+        except Exception:
+            logger.exception(
+                "[GAP] run_career_engine: failed to hydrate GapAnalysisResult from payload"
+            )
+    metrics_score = (
+        analysis_obj.metrics.overall_score
+        if analysis_obj
+        else result.get("overall_match")
     )
-    return {"result": result}
+    logger.info(
+        f"[GAP] run_career_engine: analysis finished overall_match={metrics_score} analysis_id={result.get('analysis_id')}"
+    )
+    state_update: GapState = {"result": result}
+    if analysis_obj:
+        state_update["analysis"] = analysis_obj
+    return state_update
 
 
 def run_gap_agent(user_id: str, job_id: int) -> Dict[str, Any]:
@@ -119,13 +138,22 @@ def run_gap_agent(user_id: str, job_id: int) -> Dict[str, Any]:
     builder.add_edge("run_career_engine", END)
     graph = builder.compile()
     out: GapState = graph.invoke({"user_id": user_id, "job_id": job_id})  # type: ignore
+    analysis_obj = out.get("analysis")
     if out.get("error"):
         logger.error(
             f"[GAP] run_gap_agent: completed with error for user_id={user_id}, job_id={job_id}, error={out.get('error')}"
         )
     else:
         res = out.get("result", {})
+        overall = (
+            analysis_obj.metrics.overall_score
+            if analysis_obj
+            else res.get("overall_match")
+        )
+        analysis_id = (
+            analysis_obj.analysis_id if analysis_obj else res.get("analysis_id")
+        )
         logger.info(
-            f"[GAP] run_gap_agent: success user_id={user_id}, job_id={job_id}, overall_match={res.get('overall_match')}, analysis_id={res.get('analysis_id')}"
+            f"[GAP] run_gap_agent: success user_id={user_id}, job_id={job_id}, overall_match={overall}, analysis_id={analysis_id}"
         )
     return out.get("result", {})

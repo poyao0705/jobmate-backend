@@ -11,6 +11,7 @@ from .onet_mapper import OnetMapper
 from .gap_analyzer import GapAnalyzer
 from .report_renderer import ReportRenderer
 from .config import config
+from .schemas import analysis_to_transport_payload
 from jobmate_agent.services.resume_management.helpers import get_resume_text
 
 logger = logging.getLogger(__name__)
@@ -247,31 +248,17 @@ class CareerEngine:
         )
 
         # 3) Compare & persist
-        result = self.analyzer.compare(resume_map, job_map)
+        comparison = self.analyzer.compare(resume_map, job_map)
         logger.info(
-            f"[GAP] CareerEngine.analyze: comparison done overall_match={result.get('overall_match')}"
+            f"[GAP] CareerEngine.analyze: comparison done overall_match={comparison.score}"
         )
-        # Extract all resume skills for detailed analysis display
-        resume_skills = [
-            skill
-            for skill in resume_map
-            if (skill.get("match") or {}).get("skill_type") == "skill"
-        ]
-        result["resume_skills"] = resume_skills
-
-        # Extract underqualified skills for backward compatibility with DB schema
-        underqualified = [
-            skill
-            for skill in result.get("matched_skills", [])
-            if skill.get("status") == "underqualified"
-        ]
 
         logger.info(
-            f"[RESUME_SKILLS] CareerEngine.analyze: Extracted {len(resume_skills)} resume skills "
+            f"[RESUME_SKILLS] CareerEngine.analyze: Extracted {len(comparison.raw_resume)} resume skills "
             f"for resume_id={resume_id}, job_id={job_id}"
         )
-        if resume_skills:
-            sample_skill = resume_skills[0]
+        if comparison.raw_resume:
+            sample_skill = comparison.raw_resume[0]
             skill_name = (sample_skill.get("match") or {}).get("name", "unknown")
             candidate_level = sample_skill.get("candidate_level", {})
             logger.debug(
@@ -280,22 +267,60 @@ class CareerEngine:
                 f"score={candidate_level.get('score', 'N/A')}"
             )
 
+        analysis_context = {
+            "resume_id": resume_id,
+            "job_id": job_id,
+            "processing_run_id": getattr(resume, "processing_run_id", None),
+            "job_title": job_title,
+            "company": company,
+            "job_location": (
+                getattr(job_listing, "location", None) if job_listing else None
+            ),
+            "job_url": (
+                getattr(job_listing, "external_url", None) if job_listing else None
+            ),
+            "job_source": getattr(job_listing, "source", None) if job_listing else None,
+            "extractor_mode": self._extractor_mode,
+            "extractor_version": getattr(self.extractor, "version", None),
+            "analyzer_version": "gap-analyzer.v1",
+        }
+
+        analysis = comparison.as_analysis(
+            context=analysis_context,
+            extras={"mapping": mapping_diagnostics},
+        )
+
+        # Extract underqualified skills for backward compatibility with DB schema
+        underqualified = [
+            skill
+            for skill in comparison.raw_matched
+            if skill.get("status") == "underqualified"
+        ]
+
         rec_id = None
+        canonical_payload: Dict[str, Any] | None = None
         try:
             rec = SkillGapReport(
                 user_id=resume.user_id,  # store UserProfile.id (string) as report owner
                 resume_id=resume_id,
                 job_listing_id=job_listing.id if job_listing else None,
-                matched_skills_json=result["matched_skills"],
-                missing_skills_json=result["missing_skills"],
+                matched_skills_json=comparison.raw_matched,
+                missing_skills_json=comparison.raw_missing,
                 weak_skills_json=underqualified,
-                resume_skills_json=result["resume_skills"],
-                score=result["overall_match"],
+                resume_skills_json=comparison.raw_resume,
+                score=comparison.score,
                 processing_run_id=resume.processing_run_id,
             )
             db.session.add(rec)
-            db.session.commit()
+            db.session.flush()
             rec_id = rec.id
+            analysis.analysis_id = rec_id
+            report_markdown = self.renderer.render(analysis)
+            analysis.report_markdown = report_markdown
+            canonical_payload = analysis_to_transport_payload(analysis)
+            rec.analysis_version = analysis.version
+            rec.analysis_json = canonical_payload
+            db.session.commit()
 
             # Log what was saved to database
             saved_resume_skills_count = (
@@ -324,12 +349,33 @@ class CareerEngine:
                 "[GAP] CareerEngine.analyze: failed to persist SkillGapReport"
             )
 
-        result["analysis_id"] = rec_id
-        result["report_md"] = self.renderer.render(result)
+        if rec_id is None:
+            report_markdown = self.renderer.render(analysis)
+            analysis.report_markdown = report_markdown
+        else:
+            report_markdown = analysis.report_markdown or ""
+
         logger.info(
             f"[GAP] CareerEngine.analyze: end resume_id={resume_id}, job_id={job_id}, analysis_id={rec_id}"
         )
-        return result
+
+        # Return canonical payload alongside legacy fields for existing consumers
+        canonical_payload = canonical_payload or analysis_to_transport_payload(analysis)
+        # ensure markdown present for consumers not reading canonical object
+        canonical_payload.setdefault("report_markdown", report_markdown)
+
+        legacy = comparison.legacy_payload()
+        legacy.update(
+            {
+                "analysis_id": rec_id,
+                "report_md": report_markdown,
+                "analysis": canonical_payload,
+            }
+        )
+        logger.info(
+            f"[GAP] CareerEngine.analyze: Prepared canonical payload for analysis_id={rec_id}"
+        )
+        return legacy
 
     def _ensure_resume_cached_extract(self, resume: Resume) -> Dict[str, Any]:
         pj = resume.parsed_json or {}

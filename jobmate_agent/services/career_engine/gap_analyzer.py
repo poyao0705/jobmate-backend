@@ -1,11 +1,74 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 from .config import config
+from .schemas import (
+    AnalysisContext,
+    GapAnalysisResult,
+    MatchedSkill,
+    MissingSkill,
+    ResumeSkill,
+    compute_metrics,
+    matched_skill_from_legacy,
+    missing_skill_from_legacy,
+    resume_skill_from_legacy,
+)
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class GapAnalyzerOutput:
+    """Structured comparison payload produced by :class:`GapAnalyzer`."""
+
+    score: float
+    matched_skills: List[MatchedSkill]
+    missing_skills: List[MissingSkill]
+    resume_skills: List[ResumeSkill]
+    raw_matched: List[Dict[str, Any]]
+    raw_missing: List[Dict[str, Any]]
+    raw_resume: List[Dict[str, Any]]
+    diagnostics: Dict[str, Any]
+
+    def as_analysis(
+        self,
+        *,
+        context: Optional[Dict[str, Any]] = None,
+        analysis_id: Optional[int] = None,
+        extras: Optional[Dict[str, Any]] = None,
+    ) -> GapAnalysisResult:
+        """Convert the comparison into a versioned `GapAnalysisResult`."""
+
+        ctx = AnalysisContext(**(context or {}))
+        metrics = compute_metrics(
+            overall_score=self.score,
+            matched=self.matched_skills,
+            missing=self.missing_skills,
+            resume=self.resume_skills,
+        )
+        return GapAnalysisResult(
+            analysis_id=analysis_id,
+            context=ctx,
+            metrics=metrics,
+            matched_skills=self.matched_skills,
+            missing_skills=self.missing_skills,
+            resume_skills=self.resume_skills,
+            diagnostics=self.diagnostics,
+            extras=extras or {},
+        )
+
+    def legacy_payload(self) -> Dict[str, Any]:
+        """Return the legacy dict structure for backwards compatibility."""
+
+        return {
+            "overall_match": self.score,
+            "matched_skills": self.raw_matched,
+            "missing_skills": self.raw_missing,
+            "resume_skills": self.raw_resume,
+        }
 
 
 class GapAnalyzer:
@@ -14,7 +77,7 @@ class GapAnalyzer:
 
     def compare(
         self, resume_map: List[Dict[str, Any]], job_map: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+    ) -> GapAnalyzerOutput:
         logger.info(
             f"Comparing resume ({len(resume_map)} items) vs job ({len(job_map)} items)"
         )
@@ -92,11 +155,34 @@ class GapAnalyzer:
             else:
                 m["status"] = "meets_or_exceeds"
 
-        return {
-            "overall_match": score,
-            "matched_skills": matched,  # Skills only (used for scoring)
-            "missing_skills": missing,  # Skills only (used for scoring)
+        resume_skill_rows = [
+            skill
+            for skill in resume_map
+            if (skill.get("match") or {}).get("skill_type") == "skill"
+        ]
+
+        canonical_matched = [matched_skill_from_legacy(m) for m in matched]
+        canonical_missing = [missing_skill_from_legacy(m) for m in missing]
+        canonical_resume = [resume_skill_from_legacy(s) for s in resume_skill_rows]
+
+        diagnostics = {
+            "resume_items": len(resume_map),
+            "job_items": len(job_map),
+            "resume_skills": len(resume_skill_rows),
+            "matched_count": len(matched),
+            "missing_count": len(missing),
         }
+
+        return GapAnalyzerOutput(
+            score=score,
+            matched_skills=canonical_matched,
+            missing_skills=canonical_missing,
+            resume_skills=canonical_resume,
+            raw_matched=matched,
+            raw_missing=missing,
+            raw_resume=resume_skill_rows,
+            diagnostics=diagnostics,
+        )
 
     def _level_delta(self, cand: Dict[str, Any], req: Dict[str, Any]) -> float:
         """Positive value means candidate is under required level."""
@@ -145,4 +231,3 @@ class GapAnalyzer:
     def _is_skill(self, m: Dict[str, Any]) -> bool:
         """Check if a mapped item is a skill (not a task)."""
         return (m.get("match") or {}).get("skill_type") == "skill"
-

@@ -11,6 +11,10 @@ from jobmate_agent.jwt_auth import require_jwt
 from jobmate_agent.models import db, Resume, SkillGapReport, JobListing, SkillGapStatus
 from jobmate_agent.services.career_engine.report_renderer import ReportRenderer
 from jobmate_agent.agents.gap_agent import run_gap_agent
+from jobmate_agent.services.career_engine.schemas import (
+    analysis_to_transport_payload,
+    load_analysis_from_storage,
+)
 
 
 def _notify_frontend_gap_ready(job_id: int) -> None:
@@ -107,16 +111,12 @@ def run_gap_analysis():
             f"overall_match={result.get('overall_match')}, analysis_id={result.get('analysis_id')}"
         )
 
-        return (
-            jsonify(
-                {
-                    "gap_report_id": result.get("analysis_id"),
-                    "score": result.get("overall_match"),
-                    "report_md": result.get("report_md"),
-                }
-            ),
-            200,
-        )
+        analysis_payload = result.get("analysis") or {}
+        response_body = {
+            "gap_report_id": result.get("analysis_id"),
+            "analysis": analysis_payload or None,
+        }
+        return jsonify(response_body), 200
     except Exception as e:
         logger.exception("Failed to run gap analysis")
         if "user_id" in locals() and isinstance(job_id, int):
@@ -157,109 +157,49 @@ def get_gap_report_by_job(job_id: int):
             )
             return jsonify({"exists": False}), 200
 
-        # Re-render markdown report from stored JSON to return to frontend
-        # Use stored resume_skills_json from database (no need to re-extract on every fetch)
-        resume_skills = rec.resume_skills_json or []
-
-        logger.info(
-            f"[RESUME_SKILLS] get_gap_report_by_job: Reading from database - "
-            f"report id={rec.id}, resume_skills_json is NULL={rec.resume_skills_json is None}, "
-            f"resume_skills count={len(resume_skills)}"
-        )
-        if not resume_skills:
-            logger.warning(
-                f"[RESUME_SKILLS] get_gap_report_by_job: report id={rec.id} has no resume_skills_json "
-                "(likely created before migration). Regenerate report to see resume skills."
-            )
-        else:
-            first_skill_name = (resume_skills[0].get("match") or {}).get(
-                "name", "unknown"
-            )
-            logger.debug(
-                f"[RESUME_SKILLS] get_gap_report_by_job: Loaded {len(resume_skills)} skills from database. "
-                f"First skill: '{first_skill_name}'"
-            )
-        matched_skills = rec.matched_skills_json or []
-        missing_skills = rec.missing_skills_json or []
-        underqualified = rec.weak_skills_json or []
-
-        # Reconstruct status flags from stored data for backward compatibility
-        # Add status field to matched_skills
-        from jobmate_agent.services.career_engine.config import config
-
-        level_grace = config.score_weights.level_grace
-        underqualified_ids = {
-            (m.get("match") or {}).get("skill_id")
-            for m in underqualified
-            if (m.get("match") or {}).get("skill_id")
-        }
-
-        for m in matched_skills:
-            # If status already exists (new format), keep it
-            if "status" not in m:
-                skill_id = (m.get("match") or {}).get("skill_id")
-                if skill_id in underqualified_ids:
-                    m["status"] = "underqualified"
-                else:
-                    level_delta = m.get("level_delta") or 0
-                    if level_delta > level_grace:
-                        m["status"] = "underqualified"
-                    else:
-                        m["status"] = "meets_or_exceeds"
-
-        # Add flags to missing_skills
-        for m in missing_skills:
-            # If flags already exist (new format), keep them
-            if "is_hot_tech" not in m:
-                match_obj = m.get("match") or {}
-                m["is_hot_tech"] = bool(match_obj.get("hot_tech"))
-            if "is_in_demand" not in m:
-                match_obj = m.get("match") or {}
-                m["is_in_demand"] = bool(match_obj.get("in_demand"))
-
-        logger.debug(
-            f"[RESUME_SKILLS] get_gap_report_by_job: Preparing render_payload with "
-            f"resume_skills count={len(resume_skills)}"
+        analysis = load_analysis_from_storage(
+            analysis_json=rec.analysis_json,
+            analysis_version=rec.analysis_version,
+            score=rec.score,
+            matched_skills=rec.matched_skills_json,
+            missing_skills=rec.missing_skills_json,
+            resume_skills=rec.resume_skills_json,
+            context={
+                "resume_id": rec.resume_id,
+                "job_id": rec.job_listing_id,
+                "processing_run_id": rec.processing_run_id,
+            },
+            analysis_id=rec.id,
         )
 
-        renderer = ReportRenderer()
-        render_payload = {
-            "overall_match": rec.score,
-            "matched_skills": matched_skills,
-            "missing_skills": missing_skills,
-            "resume_skills": resume_skills,
-        }
-        report_md = renderer.render(render_payload)
+        if not analysis.report_markdown:
+            renderer = ReportRenderer()
+            analysis.report_markdown = renderer.render(analysis)
 
-        logger.debug(
-            f"[RESUME_SKILLS] get_gap_report_by_job: Report rendered. "
-            f"report_md length={len(report_md)}, "
-            f"contains 'Skills Detected'={('Skills Detected' in report_md)}"
-        )
+        payload = analysis_to_transport_payload(analysis)
 
-        # Return the modified arrays (with status flags) instead of raw DB JSON
+        if rec.analysis_json is None:
+            try:
+                rec.analysis_version = analysis.version
+                rec.analysis_json = payload
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+
         resp = {
             "exists": True,
+            "analysis": payload,
             "id": rec.id,
-            "score": rec.score,
-            "matched_skills": matched_skills,  # Modified with status flags
-            "missing_skills": missing_skills,  # Modified with is_hot_tech/is_in_demand flags
-            "weak_skills": rec.weak_skills_json,  # Keep original for backward compatibility
-            "resume_skills": resume_skills,
-            "report_md": report_md,
         }
 
+        metrics = payload.get("metrics", {})
+        matched = payload.get("matched_skills", [])
+        missing = payload.get("missing_skills", [])
+        resume_skills = payload.get("resume_skills", [])
         logger.info(
-            f"[RESUME_SKILLS] get_gap_report_by_job: Sending API response - "
-            f"report id={rec.id}, resume_skills in response={len(resume_skills)}, "
-            f"resume_skills is array={isinstance(resume_skills, list)}"
+            f"[GAP] get_gap_report_by_job: returning report id={rec.id} score={metrics.get('overall_score', rec.score)} matched={len(matched)} missing={len(missing)} resume_skills={len(resume_skills)}"
         )
-        logger.info(
-            f"[GAP] get_gap_report_by_job: returning report id={rec.id} score={rec.score} "
-            f"matched={len(rec.matched_skills_json or [])} missing={len(rec.missing_skills_json or [])} "
-            f"resume_skills={len(resume_skills)}"
-        )
-        return (jsonify(resp), 200)
+        return jsonify(resp), 200
     except Exception as e:
         logger.exception("Failed to fetch gap report")
         return jsonify({"error": f"Failed to fetch gap report: {str(e)}"}), 500
