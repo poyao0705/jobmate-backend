@@ -1,0 +1,22 @@
+{
+  "export_timestamp": "20251023_201336",
+  "source_database": "instance/efficientai.db",
+  "tables_exported": {
+    "users": 7,
+    "goals": 9,
+    "chats": 28,
+    "memberships": 0,
+    "user_settings": 0,
+    "tasks": 7,
+    "chat_messages": 68,
+    "notes": 29,
+    "alembic_version": 1,
+    "user_profiles": 4,
+    "processing_runs": 0,
+    "resumes": 0,
+    "skills": 293,
+    "skill_aliases": 99,
+    "job_listings": 6
+  },
+  "total_records": 551
+}

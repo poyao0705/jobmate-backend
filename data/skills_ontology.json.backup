@@ -1,0 +1,3811 @@
+[
+  {
+    "skill_id": "fe.react",
+    "name": "React",
+    "taxonomy_path": "ENGINEERING/FRONTEND/REACT",
+    "category": "ENGINEERING",
+    "aliases": [
+      "ReactJS",
+      "React.js"
+    ],
+    "meta": {
+      "tags": [
+        "ui",
+        "js"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.nextjs",
+    "name": "Next.js",
+    "taxonomy_path": "ENGINEERING/FRONTEND/NEXTJS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Next",
+      "NextJS"
+    ],
+    "meta": {
+      "tags": [
+        "react",
+        "ssr"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.remix",
+    "name": "Remix",
+    "taxonomy_path": "ENGINEERING/FRONTEND/REMIX",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "react",
+        "routing"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.vue",
+    "name": "Vue.js",
+    "taxonomy_path": "ENGINEERING/FRONTEND/VUE",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Vue"
+    ],
+    "meta": {
+      "tags": [
+        "ui",
+        "js"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.nuxt",
+    "name": "Nuxt",
+    "taxonomy_path": "ENGINEERING/FRONTEND/NUXT",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Nuxt.js"
+    ],
+    "meta": {
+      "tags": [
+        "vue",
+        "ssr"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.angular",
+    "name": "Angular",
+    "taxonomy_path": "ENGINEERING/FRONTEND/ANGULAR",
+    "category": "ENGINEERING",
+    "aliases": [
+      "AngularJS"
+    ],
+    "meta": {
+      "tags": [
+        "ui"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.svelte",
+    "name": "Svelte",
+    "taxonomy_path": "ENGINEERING/FRONTEND/SVELTE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ui"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.solid",
+    "name": "SolidJS",
+    "taxonomy_path": "ENGINEERING/FRONTEND/SOLID",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Solid"
+    ],
+    "meta": {
+      "tags": [
+        "ui"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.javascript",
+    "name": "JavaScript",
+    "taxonomy_path": "ENGINEERING/FRONTEND/JAVASCRIPT",
+    "category": "ENGINEERING",
+    "aliases": [
+      "JS",
+      "ECMAScript"
+    ],
+    "meta": {
+      "tags": [
+        "web"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.typescript",
+    "name": "TypeScript",
+    "taxonomy_path": "ENGINEERING/FRONTEND/TYPESCRIPT",
+    "category": "ENGINEERING",
+    "aliases": [
+      "TS"
+    ],
+    "meta": {
+      "tags": [
+        "js",
+        "types"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.html",
+    "name": "HTML",
+    "taxonomy_path": "ENGINEERING/FRONTEND/HTML",
+    "category": "ENGINEERING",
+    "aliases": [
+      "HTML5"
+    ],
+    "meta": {
+      "tags": [
+        "web"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.css",
+    "name": "CSS",
+    "taxonomy_path": "ENGINEERING/FRONTEND/CSS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Cascading Style Sheets"
+    ],
+    "meta": {
+      "tags": [
+        "web"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.tailwind",
+    "name": "TailwindCSS",
+    "taxonomy_path": "ENGINEERING/FRONTEND/TAILWINDCSS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Tailwind"
+    ],
+    "meta": {
+      "tags": [
+        "css"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.radix",
+    "name": "Radix UI",
+    "taxonomy_path": "ENGINEERING/FRONTEND/RADIX_UI",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Radix"
+    ],
+    "meta": {
+      "tags": [
+        "components"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.mui",
+    "name": "MUI",
+    "taxonomy_path": "ENGINEERING/FRONTEND/MUI",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Material UI"
+    ],
+    "meta": {
+      "tags": [
+        "components"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.ant",
+    "name": "Ant Design",
+    "taxonomy_path": "ENGINEERING/FRONTEND/ANTD",
+    "category": "ENGINEERING",
+    "aliases": [
+      "AntD"
+    ],
+    "meta": {
+      "tags": [
+        "components"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.shadcn",
+    "name": "shadcn/ui",
+    "taxonomy_path": "ENGINEERING/FRONTEND/SHADCN_UI",
+    "category": "ENGINEERING",
+    "aliases": [
+      "shadcn"
+    ],
+    "meta": {
+      "tags": [
+        "components"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.redux",
+    "name": "Redux",
+    "taxonomy_path": "ENGINEERING/FRONTEND/REDUX",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "state"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.redux_toolkit",
+    "name": "Redux Toolkit",
+    "taxonomy_path": "ENGINEERING/FRONTEND/REDUX_TOOLKIT",
+    "category": "ENGINEERING",
+    "aliases": [
+      "RTK"
+    ],
+    "meta": {
+      "tags": [
+        "state"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.zustand",
+    "name": "Zustand",
+    "taxonomy_path": "ENGINEERING/FRONTEND/ZUSTAND",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "state"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.react_query",
+    "name": "TanStack Query",
+    "taxonomy_path": "ENGINEERING/FRONTEND/TANSTACK_QUERY",
+    "category": "ENGINEERING",
+    "aliases": [
+      "React Query"
+    ],
+    "meta": {
+      "tags": [
+        "data-fetching"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.swr",
+    "name": "SWR",
+    "taxonomy_path": "ENGINEERING/FRONTEND/SWR",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "data-fetching"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.storybook",
+    "name": "Storybook",
+    "taxonomy_path": "ENGINEERING/FRONTEND/STORYBOOK",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ui",
+        "docs"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.eslint",
+    "name": "ESLint",
+    "taxonomy_path": "ENGINEERING/FRONTEND/ESLINT",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "lint"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.prettier",
+    "name": "Prettier",
+    "taxonomy_path": "ENGINEERING/FRONTEND/PRETTIER",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "format"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.vite",
+    "name": "Vite",
+    "taxonomy_path": "ENGINEERING/FRONTEND/VITE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "bundler"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.webpack",
+    "name": "Webpack",
+    "taxonomy_path": "ENGINEERING/FRONTEND/WEBPACK",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "bundler"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.rollup",
+    "name": "Rollup",
+    "taxonomy_path": "ENGINEERING/FRONTEND/ROLLUP",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "bundler"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.parcel",
+    "name": "Parcel",
+    "taxonomy_path": "ENGINEERING/FRONTEND/PARCEL",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "bundler"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.babel",
+    "name": "Babel",
+    "taxonomy_path": "ENGINEERING/FRONTEND/BABEL",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "transpile"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.three",
+    "name": "Three.js",
+    "taxonomy_path": "ENGINEERING/FRONTEND/THREE_JS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Three"
+    ],
+    "meta": {
+      "tags": [
+        "webgl",
+        "3d"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.d3",
+    "name": "D3.js",
+    "taxonomy_path": "ENGINEERING/FRONTEND/D3",
+    "category": "ENGINEERING",
+    "aliases": [
+      "D3"
+    ],
+    "meta": {
+      "tags": [
+        "charts"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.web_components",
+    "name": "Web Components",
+    "taxonomy_path": "ENGINEERING/FRONTEND/WEB_COMPONENTS",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "custom-elements"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.pwa",
+    "name": "PWA",
+    "taxonomy_path": "ENGINEERING/FRONTEND/PWA",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Progressive Web App"
+    ],
+    "meta": {
+      "tags": [
+        "offline"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.service_worker",
+    "name": "Service Workers",
+    "taxonomy_path": "ENGINEERING/FRONTEND/SERVICE_WORKERS",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "offline"
+      ]
+    }
+  },
+  {
+    "skill_id": "fe.websocket",
+    "name": "WebSocket (FE)",
+    "taxonomy_path": "ENGINEERING/FRONTEND/WEBSOCKET",
+    "category": "ENGINEERING",
+    "aliases": [
+      "WS"
+    ],
+    "meta": {
+      "tags": [
+        "realtime"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.node",
+    "name": "Node.js",
+    "taxonomy_path": "ENGINEERING/BACKEND/NODE",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Node"
+    ],
+    "meta": {
+      "tags": [
+        "runtime"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.express",
+    "name": "Express",
+    "taxonomy_path": "ENGINEERING/BACKEND/EXPRESS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Express.js"
+    ],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.fastify",
+    "name": "Fastify",
+    "taxonomy_path": "ENGINEERING/BACKEND/FASTIFY",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.nest",
+    "name": "NestJS",
+    "taxonomy_path": "ENGINEERING/BACKEND/NESTJS",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.koa",
+    "name": "Koa",
+    "taxonomy_path": "ENGINEERING/BACKEND/KOA",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.hapi",
+    "name": "hapi",
+    "taxonomy_path": "ENGINEERING/BACKEND/HAPI",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.trpc",
+    "name": "tRPC",
+    "taxonomy_path": "ENGINEERING/BACKEND/TRPC",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "rpc"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.prisma",
+    "name": "Prisma",
+    "taxonomy_path": "ENGINEERING/BACKEND/PRISMA",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orm"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.typeorm",
+    "name": "TypeORM",
+    "taxonomy_path": "ENGINEERING/BACKEND/TYPEORM",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orm"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.sequelize",
+    "name": "Sequelize",
+    "taxonomy_path": "ENGINEERING/BACKEND/SEQUELIZE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orm"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.python",
+    "name": "Python",
+    "taxonomy_path": "ENGINEERING/BACKEND/PYTHON",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Py"
+    ],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.flask",
+    "name": "Flask",
+    "taxonomy_path": "ENGINEERING/BACKEND/FLASK",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.fastapi",
+    "name": "FastAPI",
+    "taxonomy_path": "ENGINEERING/BACKEND/FASTAPI",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.django",
+    "name": "Django",
+    "taxonomy_path": "ENGINEERING/BACKEND/DJANGO",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.sqlalchemy",
+    "name": "SQLAlchemy",
+    "taxonomy_path": "ENGINEERING/BACKEND/SQLALCHEMY",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orm"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.celery",
+    "name": "Celery",
+    "taxonomy_path": "ENGINEERING/BACKEND/CELERY",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "tasks"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.gunicorn",
+    "name": "Gunicorn",
+    "taxonomy_path": "ENGINEERING/BACKEND/GUNICORN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "wsgi"
+      ]
+    }
+  },
+  {
+    "skill_id": "be.uvicorn",
+    "name": "Uvicorn",
+    "taxonomy_path": "ENGINEERING/BACKEND/UVICORN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "asgi"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.go",
+    "name": "Go",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/GO",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Golang"
+    ],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "go.gin",
+    "name": "Gin",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/GO_GIN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "go.echo",
+    "name": "Echo",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/GO_ECHO",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "go.fiber",
+    "name": "Fiber",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/GO_FIBER",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.java",
+    "name": "Java",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "java.spring",
+    "name": "Spring Framework",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA_SPRING",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Spring"
+    ],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "java.spring_boot",
+    "name": "Spring Boot",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA_SPRING_BOOT",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "framework"
+      ]
+    }
+  },
+  {
+    "skill_id": "java.hibernate",
+    "name": "Hibernate",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA_HIBERNATE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orm"
+      ]
+    }
+  },
+  {
+    "skill_id": "java.maven",
+    "name": "Maven",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA_MAVEN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "build"
+      ]
+    }
+  },
+  {
+    "skill_id": "java.gradle",
+    "name": "Gradle",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/JAVA_GRADLE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "build"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.rust",
+    "name": "Rust",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/RUST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.cpp",
+    "name": "C++",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/C_PLUS_PLUS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Cplusplus"
+    ],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.csharp",
+    "name": "C#",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/C_SHARP",
+    "category": "ENGINEERING",
+    "aliases": [
+      "C Sharp"
+    ],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.scala",
+    "name": "Scala",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/SCALA",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.ruby",
+    "name": "Ruby",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/RUBY",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.php",
+    "name": "PHP",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/PHP",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.swift",
+    "name": "Swift",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/SWIFT",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "lang.kotlin",
+    "name": "Kotlin",
+    "taxonomy_path": "ENGINEERING/LANGUAGES/KOTLIN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "language"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.postgres",
+    "name": "PostgreSQL",
+    "taxonomy_path": "DATA/DATABASE/POSTGRESQL",
+    "category": "DATA",
+    "aliases": [
+      "Postgres"
+    ],
+    "meta": {
+      "tags": [
+        "sql"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.mysql",
+    "name": "MySQL",
+    "taxonomy_path": "DATA/DATABASE/MYSQL",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "sql"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.mariadb",
+    "name": "MariaDB",
+    "taxonomy_path": "DATA/DATABASE/MARIADB",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "sql"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.sqlite",
+    "name": "SQLite",
+    "taxonomy_path": "DATA/DATABASE/SQLITE",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "sql",
+        "embedded"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.mssql",
+    "name": "SQL Server",
+    "taxonomy_path": "DATA/DATABASE/SQL_SERVER",
+    "category": "DATA",
+    "aliases": [
+      "MSSQL"
+    ],
+    "meta": {
+      "tags": [
+        "sql"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.oracle",
+    "name": "Oracle Database",
+    "taxonomy_path": "DATA/DATABASE/ORACLE",
+    "category": "DATA",
+    "aliases": [
+      "Oracle"
+    ],
+    "meta": {
+      "tags": [
+        "sql"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.mongo",
+    "name": "MongoDB",
+    "taxonomy_path": "DATA/DATABASE/MONGODB",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nosql",
+        "document"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.cassandra",
+    "name": "Apache Cassandra",
+    "taxonomy_path": "DATA/DATABASE/CASSANDRA",
+    "category": "DATA",
+    "aliases": [
+      "Cassandra"
+    ],
+    "meta": {
+      "tags": [
+        "nosql",
+        "wide-column"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.redis",
+    "name": "Redis",
+    "taxonomy_path": "DATA/CACHE/REDIS",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cache",
+        "kv"
+      ]
+    }
+  },
+  {
+    "skill_id": "db.memcached",
+    "name": "Memcached",
+    "taxonomy_path": "DATA/CACHE/MEMCACHED",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cache"
+      ]
+    }
+  },
+  {
+    "skill_id": "search.elasticsearch",
+    "name": "Elasticsearch",
+    "taxonomy_path": "DATA/SEARCH/ELASTICSEARCH",
+    "category": "DATA",
+    "aliases": [
+      "ES"
+    ],
+    "meta": {
+      "tags": [
+        "search",
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "search.opensearch",
+    "name": "OpenSearch",
+    "taxonomy_path": "DATA/SEARCH/OPENSEARCH",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "search",
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "graph.neo4j",
+    "name": "Neo4j",
+    "taxonomy_path": "DATA/GRAPH/NEO4J",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "graph"
+      ]
+    }
+  },
+  {
+    "skill_id": "graph.janusgraph",
+    "name": "JanusGraph",
+    "taxonomy_path": "DATA/GRAPH/JANUSGRAPH",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "graph"
+      ]
+    }
+  },
+  {
+    "skill_id": "tsdb.influx",
+    "name": "InfluxDB",
+    "taxonomy_path": "DATA/TSDB/INFLUXDB",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "time-series"
+      ]
+    }
+  },
+  {
+    "skill_id": "tsdb.timescale",
+    "name": "TimescaleDB",
+    "taxonomy_path": "DATA/TSDB/TIMESCALEDB",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "time-series"
+      ]
+    }
+  },
+  {
+    "skill_id": "olap.snowflake",
+    "name": "Snowflake",
+    "taxonomy_path": "DATA/WAREHOUSE/SNOWFLAKE",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "olap.redshift",
+    "name": "Amazon Redshift",
+    "taxonomy_path": "DATA/WAREHOUSE/REDSHIFT",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "olap.bigquery",
+    "name": "Google BigQuery",
+    "taxonomy_path": "DATA/WAREHOUSE/BIGQUERY",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.kafka",
+    "name": "Apache Kafka",
+    "taxonomy_path": "DATA/STREAM/KAFKA",
+    "category": "DATA",
+    "aliases": [
+      "Kafka"
+    ],
+    "meta": {
+      "tags": [
+        "stream"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.kinesis",
+    "name": "Amazon Kinesis",
+    "taxonomy_path": "DATA/STREAM/KINESIS",
+    "category": "DATA",
+    "aliases": [
+      "Kinesis"
+    ],
+    "meta": {
+      "tags": [
+        "stream"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.pulsar",
+    "name": "Apache Pulsar",
+    "taxonomy_path": "DATA/STREAM/PULSAR",
+    "category": "DATA",
+    "aliases": [
+      "Pulsar"
+    ],
+    "meta": {
+      "tags": [
+        "stream"
+      ]
+    }
+  },
+  {
+    "skill_id": "queue.rabbitmq",
+    "name": "RabbitMQ",
+    "taxonomy_path": "DATA/QUEUE/RABBITMQ",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "queue"
+      ]
+    }
+  },
+  {
+    "skill_id": "queue.activemq",
+    "name": "ActiveMQ",
+    "taxonomy_path": "DATA/QUEUE/ACTIVEMQ",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "queue"
+      ]
+    }
+  },
+  {
+    "skill_id": "queue.sqs",
+    "name": "Amazon SQS",
+    "taxonomy_path": "DATA/QUEUE/SQS",
+    "category": "DATA",
+    "aliases": [
+      "SQS"
+    ],
+    "meta": {
+      "tags": [
+        "queue"
+      ]
+    }
+  },
+  {
+    "skill_id": "notify.sns",
+    "name": "Amazon SNS",
+    "taxonomy_path": "DATA/NOTIFY/SNS",
+    "category": "DATA",
+    "aliases": [
+      "SNS"
+    ],
+    "meta": {
+      "tags": [
+        "pubsub"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.nats",
+    "name": "NATS",
+    "taxonomy_path": "DATA/STREAM/NATS",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "pubsub"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.mqtt",
+    "name": "MQTT",
+    "taxonomy_path": "DATA/STREAM/MQTT",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "iot"
+      ]
+    }
+  },
+  {
+    "skill_id": "msg.zeromq",
+    "name": "ZeroMQ",
+    "taxonomy_path": "DATA/STREAM/ZEROMQ",
+    "category": "DATA",
+    "aliases": [
+      "ØMQ"
+    ],
+    "meta": {
+      "tags": [
+        "messaging"
+      ]
+    }
+  },
+  {
+    "skill_id": "orchestr.airflow",
+    "name": "Apache Airflow",
+    "taxonomy_path": "DATA/ORCH/AIRFLOW",
+    "category": "DATA",
+    "aliases": [
+      "Airflow"
+    ],
+    "meta": {
+      "tags": [
+        "workflow"
+      ]
+    }
+  },
+  {
+    "skill_id": "orchestr.prefect",
+    "name": "Prefect",
+    "taxonomy_path": "DATA/ORCH/PREFECT",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "workflow"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws",
+    "name": "AWS",
+    "taxonomy_path": "CLOUD/AWS",
+    "category": "CLOUD",
+    "aliases": [
+      "Amazon Web Services"
+    ],
+    "meta": {
+      "tags": [
+        "cloud"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.iam",
+    "name": "AWS IAM",
+    "taxonomy_path": "CLOUD/AWS/IAM",
+    "category": "CLOUD",
+    "aliases": [
+      "IAM"
+    ],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.vpc",
+    "name": "Amazon VPC",
+    "taxonomy_path": "CLOUD/AWS/VPC",
+    "category": "CLOUD",
+    "aliases": [
+      "VPC"
+    ],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.ec2",
+    "name": "Amazon EC2",
+    "taxonomy_path": "CLOUD/AWS/EC2",
+    "category": "CLOUD",
+    "aliases": [
+      "EC2"
+    ],
+    "meta": {
+      "tags": [
+        "compute"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.s3",
+    "name": "Amazon S3",
+    "taxonomy_path": "CLOUD/AWS/S3",
+    "category": "CLOUD",
+    "aliases": [
+      "S3"
+    ],
+    "meta": {
+      "tags": [
+        "storage"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.lambda",
+    "name": "AWS Lambda",
+    "taxonomy_path": "CLOUD/AWS/LAMBDA",
+    "category": "CLOUD",
+    "aliases": [
+      "Lambda"
+    ],
+    "meta": {
+      "tags": [
+        "serverless"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.rds",
+    "name": "Amazon RDS",
+    "taxonomy_path": "CLOUD/AWS/RDS",
+    "category": "CLOUD",
+    "aliases": [
+      "RDS"
+    ],
+    "meta": {
+      "tags": [
+        "database"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.aurora",
+    "name": "Amazon Aurora",
+    "taxonomy_path": "CLOUD/AWS/AURORA",
+    "category": "CLOUD",
+    "aliases": [
+      "Aurora"
+    ],
+    "meta": {
+      "tags": [
+        "database"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.dynamodb",
+    "name": "Amazon DynamoDB",
+    "taxonomy_path": "CLOUD/AWS/DYNAMODB",
+    "category": "CLOUD",
+    "aliases": [
+      "DynamoDB"
+    ],
+    "meta": {
+      "tags": [
+        "nosql"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.ecr",
+    "name": "Amazon ECR",
+    "taxonomy_path": "CLOUD/AWS/ECR",
+    "category": "CLOUD",
+    "aliases": [
+      "ECR"
+    ],
+    "meta": {
+      "tags": [
+        "containers"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.ecs",
+    "name": "Amazon ECS",
+    "taxonomy_path": "CLOUD/AWS/ECS",
+    "category": "CLOUD",
+    "aliases": [
+      "ECS"
+    ],
+    "meta": {
+      "tags": [
+        "containers"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.eks",
+    "name": "Amazon EKS",
+    "taxonomy_path": "CLOUD/AWS/EKS",
+    "category": "CLOUD",
+    "aliases": [
+      "EKS"
+    ],
+    "meta": {
+      "tags": [
+        "kubernetes"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.elb",
+    "name": "Elastic Load Balancing",
+    "taxonomy_path": "CLOUD/AWS/ELB",
+    "category": "CLOUD",
+    "aliases": [
+      "ALB",
+      "NLB",
+      "ELB"
+    ],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.apigw",
+    "name": "API Gateway",
+    "taxonomy_path": "CLOUD/AWS/API_GATEWAY",
+    "category": "CLOUD",
+    "aliases": [
+      "APIGW"
+    ],
+    "meta": {
+      "tags": [
+        "api"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.cloudfront",
+    "name": "CloudFront",
+    "taxonomy_path": "CLOUD/AWS/CLOUDFRONT",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cdn"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.route53",
+    "name": "Route 53",
+    "taxonomy_path": "CLOUD/AWS/ROUTE53",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dns"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.cloudwatch",
+    "name": "CloudWatch",
+    "taxonomy_path": "CLOUD/AWS/CLOUDWATCH",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "monitoring"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.cloudtrail",
+    "name": "CloudTrail",
+    "taxonomy_path": "CLOUD/AWS/CLOUDTRAIL",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "audit"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.eventbridge",
+    "name": "EventBridge",
+    "taxonomy_path": "CLOUD/AWS/EVENTBRIDGE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "event-bus"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.step_functions",
+    "name": "Step Functions",
+    "taxonomy_path": "CLOUD/AWS/STEP_FUNCTIONS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "workflow"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.glue",
+    "name": "AWS Glue",
+    "taxonomy_path": "CLOUD/AWS/GLUE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "etl"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.athena",
+    "name": "Amazon Athena",
+    "taxonomy_path": "CLOUD/AWS/ATHENA",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "query"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.emr",
+    "name": "Amazon EMR",
+    "taxonomy_path": "CLOUD/AWS/EMR",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "hadoop",
+        "spark"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.redshift",
+    "name": "Amazon Redshift",
+    "taxonomy_path": "CLOUD/AWS/REDSHIFT",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.kinesis",
+    "name": "Amazon Kinesis",
+    "taxonomy_path": "CLOUD/AWS/KINESIS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "stream"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.sqs",
+    "name": "Amazon SQS",
+    "taxonomy_path": "CLOUD/AWS/SQS",
+    "category": "CLOUD",
+    "aliases": [
+      "SQS"
+    ],
+    "meta": {
+      "tags": [
+        "queue"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.sns",
+    "name": "Amazon SNS",
+    "taxonomy_path": "CLOUD/AWS/SNS",
+    "category": "CLOUD",
+    "aliases": [
+      "SNS"
+    ],
+    "meta": {
+      "tags": [
+        "pubsub"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.ssm",
+    "name": "AWS Systems Manager",
+    "taxonomy_path": "CLOUD/AWS/SSM",
+    "category": "CLOUD",
+    "aliases": [
+      "SSM",
+      "Parameter Store"
+    ],
+    "meta": {
+      "tags": [
+        "ops"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.kms",
+    "name": "AWS KMS",
+    "taxonomy_path": "CLOUD/AWS/KMS",
+    "category": "CLOUD",
+    "aliases": [
+      "Key Management Service"
+    ],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.secrets",
+    "name": "Secrets Manager",
+    "taxonomy_path": "CLOUD/AWS/SECRETS_MANAGER",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.elastic_beanstalk",
+    "name": "Elastic Beanstalk",
+    "taxonomy_path": "CLOUD/AWS/ELASTIC_BEANSTALK",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "paas"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.cognito",
+    "name": "Amazon Cognito",
+    "taxonomy_path": "CLOUD/AWS/COGNITO",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "auth"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.aws.amplify",
+    "name": "AWS Amplify",
+    "taxonomy_path": "CLOUD/AWS/AMPLIFY",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "frontend"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp",
+    "name": "Google Cloud",
+    "taxonomy_path": "CLOUD/GCP",
+    "category": "CLOUD",
+    "aliases": [
+      "GCP"
+    ],
+    "meta": {
+      "tags": [
+        "cloud"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.iam",
+    "name": "Cloud IAM",
+    "taxonomy_path": "CLOUD/GCP/IAM",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.vpc",
+    "name": "VPC (GCP)",
+    "taxonomy_path": "CLOUD/GCP/VPC",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.gce",
+    "name": "Compute Engine",
+    "taxonomy_path": "CLOUD/GCP/COMPUTE_ENGINE",
+    "category": "CLOUD",
+    "aliases": [
+      "GCE"
+    ],
+    "meta": {
+      "tags": [
+        "compute"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.gke",
+    "name": "Google Kubernetes Engine",
+    "taxonomy_path": "CLOUD/GCP/GKE",
+    "category": "CLOUD",
+    "aliases": [
+      "GKE"
+    ],
+    "meta": {
+      "tags": [
+        "kubernetes"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.cloud_run",
+    "name": "Cloud Run",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_RUN",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "serverless",
+        "containers"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.app_engine",
+    "name": "App Engine",
+    "taxonomy_path": "CLOUD/GCP/APP_ENGINE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "paas"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.functions",
+    "name": "Cloud Functions",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_FUNCTIONS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "serverless"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.gcs",
+    "name": "Cloud Storage",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_STORAGE",
+    "category": "CLOUD",
+    "aliases": [
+      "GCS"
+    ],
+    "meta": {
+      "tags": [
+        "storage"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.bigquery",
+    "name": "BigQuery",
+    "taxonomy_path": "CLOUD/GCP/BIGQUERY",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.pubsub",
+    "name": "Pub/Sub",
+    "taxonomy_path": "CLOUD/GCP/PUBSUB",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "pubsub"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.dataflow",
+    "name": "Dataflow",
+    "taxonomy_path": "CLOUD/GCP/DATAFLOW",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "etl",
+        "beam"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.dataproc",
+    "name": "Dataproc",
+    "taxonomy_path": "CLOUD/GCP/DATAPROC",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "hadoop",
+        "spark"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.composer",
+    "name": "Cloud Composer",
+    "taxonomy_path": "CLOUD/GCP/COMPOSER",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "airflow"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.spanner",
+    "name": "Cloud Spanner",
+    "taxonomy_path": "CLOUD/GCP/SPANNER",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "database"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.cloud_sql",
+    "name": "Cloud SQL",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_SQL",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "database"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.firestore",
+    "name": "Firestore",
+    "taxonomy_path": "CLOUD/GCP/FIRESTORE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nosql",
+        "document"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.bigtable",
+    "name": "Bigtable",
+    "taxonomy_path": "CLOUD/GCP/BIGTABLE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nosql",
+        "wide-column"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.memstore",
+    "name": "Memorystore",
+    "taxonomy_path": "CLOUD/GCP/MEMORYSTORE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cache"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.build",
+    "name": "Cloud Build",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_BUILD",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ci"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.deploy",
+    "name": "Cloud Deploy",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_DEPLOY",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cd"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.logging",
+    "name": "Cloud Logging",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_LOGGING",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "observability"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.monitoring",
+    "name": "Cloud Monitoring",
+    "taxonomy_path": "CLOUD/GCP/CLOUD_MONITORING",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "observability"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.gcp.secret_manager",
+    "name": "Secret Manager",
+    "taxonomy_path": "CLOUD/GCP/SECRET_MANAGER",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure",
+    "name": "Microsoft Azure",
+    "taxonomy_path": "CLOUD/AZURE",
+    "category": "CLOUD",
+    "aliases": [
+      "Azure"
+    ],
+    "meta": {
+      "tags": [
+        "cloud"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.aad",
+    "name": "Azure AD/Entra ID",
+    "taxonomy_path": "CLOUD/AZURE/AAD",
+    "category": "CLOUD",
+    "aliases": [
+      "Azure Active Directory",
+      "Entra ID"
+    ],
+    "meta": {
+      "tags": [
+        "auth"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.vnet",
+    "name": "Azure VNet",
+    "taxonomy_path": "CLOUD/AZURE/VNET",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.vm",
+    "name": "Azure Virtual Machines",
+    "taxonomy_path": "CLOUD/AZURE/VIRTUAL_MACHINES",
+    "category": "CLOUD",
+    "aliases": [
+      "Azure VM"
+    ],
+    "meta": {
+      "tags": [
+        "compute"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.aks",
+    "name": "Azure Kubernetes Service",
+    "taxonomy_path": "CLOUD/AZURE/AKS",
+    "category": "CLOUD",
+    "aliases": [
+      "AKS"
+    ],
+    "meta": {
+      "tags": [
+        "kubernetes"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.functions",
+    "name": "Azure Functions",
+    "taxonomy_path": "CLOUD/AZURE/FUNCTIONS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "serverless"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.app_service",
+    "name": "Azure App Service",
+    "taxonomy_path": "CLOUD/AZURE/APP_SERVICE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "paas"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.storage",
+    "name": "Azure Storage",
+    "taxonomy_path": "CLOUD/AZURE/STORAGE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "storage"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.sql",
+    "name": "Azure SQL Database",
+    "taxonomy_path": "CLOUD/AZURE/SQL_DATABASE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "database"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.cosmos",
+    "name": "Azure Cosmos DB",
+    "taxonomy_path": "CLOUD/AZURE/COSMOS_DB",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nosql"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.event_hubs",
+    "name": "Azure Event Hubs",
+    "taxonomy_path": "CLOUD/AZURE/EVENT_HUBS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "stream"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.service_bus",
+    "name": "Azure Service Bus",
+    "taxonomy_path": "CLOUD/AZURE/SERVICE_BUS",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "queue"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.synapse",
+    "name": "Azure Synapse",
+    "taxonomy_path": "CLOUD/AZURE/SYNAPSE",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "warehouse"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.monitor",
+    "name": "Azure Monitor",
+    "taxonomy_path": "CLOUD/AZURE/MONITOR",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "observability"
+      ]
+    }
+  },
+  {
+    "skill_id": "cloud.azure.key_vault",
+    "name": "Azure Key Vault",
+    "taxonomy_path": "CLOUD/AZURE/KEY_VAULT",
+    "category": "CLOUD",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "dev.git",
+    "name": "Git",
+    "taxonomy_path": "ENGINEERING/TOOLS/GIT",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "vcs"
+      ]
+    }
+  },
+  {
+    "skill_id": "dev.github",
+    "name": "GitHub",
+    "taxonomy_path": "ENGINEERING/TOOLS/GITHUB",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "hosting"
+      ]
+    }
+  },
+  {
+    "skill_id": "dev.gitlab",
+    "name": "GitLab",
+    "taxonomy_path": "ENGINEERING/TOOLS/GITLAB",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "hosting"
+      ]
+    }
+  },
+  {
+    "skill_id": "ci.github_actions",
+    "name": "GitHub Actions",
+    "taxonomy_path": "OPS/CI/GITHUB_ACTIONS",
+    "category": "OPS",
+    "aliases": [
+      "GHA"
+    ],
+    "meta": {
+      "tags": [
+        "ci"
+      ]
+    }
+  },
+  {
+    "skill_id": "ci.gitlab_ci",
+    "name": "GitLab CI",
+    "taxonomy_path": "OPS/CI/GITLAB_CI",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ci"
+      ]
+    }
+  },
+  {
+    "skill_id": "ci.circleci",
+    "name": "CircleCI",
+    "taxonomy_path": "OPS/CI/CIRCLECI",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ci"
+      ]
+    }
+  },
+  {
+    "skill_id": "ci.travis",
+    "name": "Travis CI",
+    "taxonomy_path": "OPS/CI/TRAVIS_CI",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ci"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.docker",
+    "name": "Docker",
+    "taxonomy_path": "OPS/CONTAINERS/DOCKER",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "containers"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.kubernetes",
+    "name": "Kubernetes",
+    "taxonomy_path": "OPS/CONTAINERS/KUBERNETES",
+    "category": "OPS",
+    "aliases": [
+      "K8s"
+    ],
+    "meta": {
+      "tags": [
+        "orchestrator"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.helm",
+    "name": "Helm",
+    "taxonomy_path": "OPS/CONTAINERS/HELM",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "packaging"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.istio",
+    "name": "Istio",
+    "taxonomy_path": "OPS/SERVICE_MESH/ISTIO",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "mesh"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.linkerd",
+    "name": "Linkerd",
+    "taxonomy_path": "OPS/SERVICE_MESH/LINKERD",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "mesh"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.nginx",
+    "name": "Nginx",
+    "taxonomy_path": "OPS/WEBSERVER/NGINX",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "proxy"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.caddy",
+    "name": "Caddy",
+    "taxonomy_path": "OPS/WEBSERVER/CADDY",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "proxy"
+      ]
+    }
+  },
+  {
+    "skill_id": "iac.terraform",
+    "name": "Terraform",
+    "taxonomy_path": "OPS/IAC/TERRAFORM",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "iac"
+      ]
+    }
+  },
+  {
+    "skill_id": "iac.ansible",
+    "name": "Ansible",
+    "taxonomy_path": "OPS/IAC/ANSIBLE",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "config"
+      ]
+    }
+  },
+  {
+    "skill_id": "iac.cloudformation",
+    "name": "AWS CloudFormation",
+    "taxonomy_path": "OPS/IAC/CLOUDFORMATION",
+    "category": "OPS",
+    "aliases": [
+      "CloudFormation"
+    ],
+    "meta": {
+      "tags": [
+        "iac"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.packer",
+    "name": "Packer",
+    "taxonomy_path": "OPS/IMAGING/PACKER",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ami"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.vault",
+    "name": "HashiCorp Vault",
+    "taxonomy_path": "OPS/SECRETS/VAULT",
+    "category": "OPS",
+    "aliases": [
+      "Vault"
+    ],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.consul",
+    "name": "HashiCorp Consul",
+    "taxonomy_path": "OPS/SERVICE_DISCOVERY/CONSUL",
+    "category": "OPS",
+    "aliases": [
+      "Consul"
+    ],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "ops.nomad",
+    "name": "HashiCorp Nomad",
+    "taxonomy_path": "OPS/SCHEDULER/NOMAD",
+    "category": "OPS",
+    "aliases": [
+      "Nomad"
+    ],
+    "meta": {
+      "tags": [
+        "scheduler"
+      ]
+    }
+  },
+  {
+    "skill_id": "cd.argocd",
+    "name": "Argo CD",
+    "taxonomy_path": "OPS/CD/ARGOCD",
+    "category": "OPS",
+    "aliases": [
+      "ArgoCD"
+    ],
+    "meta": {
+      "tags": [
+        "cd"
+      ]
+    }
+  },
+  {
+    "skill_id": "cd.fluxcd",
+    "name": "Flux CD",
+    "taxonomy_path": "OPS/CD/FLUXCD",
+    "category": "OPS",
+    "aliases": [
+      "FluxCD"
+    ],
+    "meta": {
+      "tags": [
+        "cd"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.prometheus",
+    "name": "Prometheus",
+    "taxonomy_path": "OPS/OBSERVABILITY/PROMETHEUS",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "metrics"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.grafana",
+    "name": "Grafana",
+    "taxonomy_path": "OPS/OBSERVABILITY/GRAFANA",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dashboards"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.loki",
+    "name": "Loki",
+    "taxonomy_path": "OPS/OBSERVABILITY/LOKI",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "logs"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.tempo",
+    "name": "Tempo",
+    "taxonomy_path": "OPS/OBSERVABILITY/TEMPO",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "traces"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.jaeger",
+    "name": "Jaeger",
+    "taxonomy_path": "OPS/OBSERVABILITY/JAEGER",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "tracing"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.opentelemetry",
+    "name": "OpenTelemetry",
+    "taxonomy_path": "OPS/OBSERVABILITY/OPENTELEMETRY",
+    "category": "OPS",
+    "aliases": [
+      "OTel"
+    ],
+    "meta": {
+      "tags": [
+        "telemetry"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.datadog",
+    "name": "Datadog",
+    "taxonomy_path": "OPS/OBSERVABILITY/DATADOG",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "saas"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.newrelic",
+    "name": "New Relic",
+    "taxonomy_path": "OPS/OBSERVABILITY/NEWRELIC",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "saas"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.splunk",
+    "name": "Splunk",
+    "taxonomy_path": "OPS/OBSERVABILITY/SPLUNK",
+    "category": "OPS",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "logs"
+      ]
+    }
+  },
+  {
+    "skill_id": "obs.elastic_stack",
+    "name": "ELK Stack",
+    "taxonomy_path": "OPS/OBSERVABILITY/ELK",
+    "category": "OPS",
+    "aliases": [
+      "Elastic Stack"
+    ],
+    "meta": {
+      "tags": [
+        "logs"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.oauth2",
+    "name": "OAuth 2.0",
+    "taxonomy_path": "SECURITY/AUTH/OAUTH2",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "auth"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.oidc",
+    "name": "OpenID Connect",
+    "taxonomy_path": "SECURITY/AUTH/OIDC",
+    "category": "SECURITY",
+    "aliases": [
+      "OIDC"
+    ],
+    "meta": {
+      "tags": [
+        "auth"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.saml",
+    "name": "SAML",
+    "taxonomy_path": "SECURITY/AUTH/SAML",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "sso"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.jwt",
+    "name": "JWT",
+    "taxonomy_path": "SECURITY/AUTH/JWT",
+    "category": "SECURITY",
+    "aliases": [
+      "JSON Web Token"
+    ],
+    "meta": {
+      "tags": [
+        "token"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.mfa",
+    "name": "MFA",
+    "taxonomy_path": "SECURITY/AUTH/MFA",
+    "category": "SECURITY",
+    "aliases": [
+      "2FA"
+    ],
+    "meta": {
+      "tags": [
+        "auth"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.rbac",
+    "name": "RBAC",
+    "taxonomy_path": "SECURITY/AUTH/RBAC",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "access-control"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.abac",
+    "name": "ABAC",
+    "taxonomy_path": "SECURITY/AUTH/ABAC",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "access-control"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.waf",
+    "name": "Web Application Firewall",
+    "taxonomy_path": "SECURITY/APPSEC/WAF",
+    "category": "SECURITY",
+    "aliases": [
+      "WAF"
+    ],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.kms",
+    "name": "Key Management",
+    "taxonomy_path": "SECURITY/CRYPTO/KMS",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "keys"
+      ]
+    }
+  },
+  {
+    "skill_id": "sec.vault",
+    "name": "HashiCorp Vault",
+    "taxonomy_path": "SECURITY/SECRETS/VAULT",
+    "category": "SECURITY",
+    "aliases": [
+      "Vault"
+    ],
+    "meta": {
+      "tags": [
+        "secrets"
+      ]
+    }
+  },
+  {
+    "skill_id": "idp.auth0",
+    "name": "Auth0",
+    "taxonomy_path": "SECURITY/IDP/AUTH0",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "idp"
+      ]
+    }
+  },
+  {
+    "skill_id": "idp.okta",
+    "name": "Okta",
+    "taxonomy_path": "SECURITY/IDP/OKTA",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "idp"
+      ]
+    }
+  },
+  {
+    "skill_id": "idp.keycloak",
+    "name": "Keycloak",
+    "taxonomy_path": "SECURITY/IDP/KEYCLOAK",
+    "category": "SECURITY",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "idp"
+      ]
+    }
+  },
+  {
+    "skill_id": "idp.azure_ad",
+    "name": "Azure AD/Entra ID",
+    "taxonomy_path": "SECURITY/IDP/AZURE_AD",
+    "category": "SECURITY",
+    "aliases": [
+      "Entra ID"
+    ],
+    "meta": {
+      "tags": [
+        "idp"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.openai",
+    "name": "OpenAI API",
+    "taxonomy_path": "AI/PLATFORM/OPENAI",
+    "category": "AI",
+    "aliases": [
+      "OpenAI"
+    ],
+    "meta": {
+      "tags": [
+        "llm"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.langchain",
+    "name": "LangChain",
+    "taxonomy_path": "AI/FRAMEWORK/LANGCHAIN",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orchestration"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.llamaindex",
+    "name": "LlamaIndex",
+    "taxonomy_path": "AI/FRAMEWORK/LLAMAINDEX",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "orchestration"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.hf_transformers",
+    "name": "Transformers",
+    "taxonomy_path": "AI/NLP/TRANSFORMERS",
+    "category": "AI",
+    "aliases": [
+      "Hugging Face Transformers"
+    ],
+    "meta": {
+      "tags": [
+        "nlp"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.hf_hub",
+    "name": "Hugging Face Hub",
+    "taxonomy_path": "AI/PLATFORM/HUGGINGFACE_HUB",
+    "category": "AI",
+    "aliases": [
+      "HF Hub"
+    ],
+    "meta": {
+      "tags": [
+        "models"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.spacy",
+    "name": "spaCy",
+    "taxonomy_path": "AI/NLP/SPACY",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nlp"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.nltk",
+    "name": "NLTK",
+    "taxonomy_path": "AI/NLP/NLTK",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "nlp"
+      ]
+    }
+  },
+  {
+    "skill_id": "ml.scikit",
+    "name": "scikit-learn",
+    "taxonomy_path": "AI/ML/SCIKIT_LEARN",
+    "category": "AI",
+    "aliases": [
+      "sklearn"
+    ],
+    "meta": {
+      "tags": [
+        "classic-ml"
+      ]
+    }
+  },
+  {
+    "skill_id": "ml.xgboost",
+    "name": "XGBoost",
+    "taxonomy_path": "AI/ML/XGBOOST",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "classic-ml"
+      ]
+    }
+  },
+  {
+    "skill_id": "ml.lightgbm",
+    "name": "LightGBM",
+    "taxonomy_path": "AI/ML/LIGHTGBM",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "classic-ml"
+      ]
+    }
+  },
+  {
+    "skill_id": "ml.catboost",
+    "name": "CatBoost",
+    "taxonomy_path": "AI/ML/CATBOOST",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "classic-ml"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.pytorch",
+    "name": "PyTorch",
+    "taxonomy_path": "AI/ML/PYTORCH",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dl"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.tensorflow",
+    "name": "TensorFlow",
+    "taxonomy_path": "AI/ML/TENSORFLOW",
+    "category": "AI",
+    "aliases": [
+      "TF"
+    ],
+    "meta": {
+      "tags": [
+        "dl"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.keras",
+    "name": "Keras",
+    "taxonomy_path": "AI/ML/KERAS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dl"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.jax",
+    "name": "JAX",
+    "taxonomy_path": "AI/ML/JAX",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dl"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.onnx",
+    "name": "ONNX",
+    "taxonomy_path": "AI/ML/ONNX",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "interop"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.triton_server",
+    "name": "Triton Inference Server",
+    "taxonomy_path": "AI/INFERENCE/TRITON",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "serving"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.mlflow",
+    "name": "MLflow",
+    "taxonomy_path": "AI/MLops/MLFLOW",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "tracking"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.wandb",
+    "name": "Weights & Biases",
+    "taxonomy_path": "AI/MLops/WANDB",
+    "category": "AI",
+    "aliases": [
+      "W&B"
+    ],
+    "meta": {
+      "tags": [
+        "tracking"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.dvc",
+    "name": "DVC",
+    "taxonomy_path": "AI/MLops/DVC",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "data-versioning"
+      ]
+    }
+  },
+  {
+    "skill_id": "ai.feast",
+    "name": "Feast",
+    "taxonomy_path": "AI/MLops/FEAST",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "feature-store"
+      ]
+    }
+  },
+  {
+    "skill_id": "vec.faiss",
+    "name": "FAISS",
+    "taxonomy_path": "AI/VECTOR/FAISS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "vec.pinecone",
+    "name": "Pinecone",
+    "taxonomy_path": "AI/VECTOR/PINECONE",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "vec.chroma",
+    "name": "Chroma",
+    "taxonomy_path": "AI/VECTOR/CHROMA",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "vec.milvus",
+    "name": "Milvus",
+    "taxonomy_path": "AI/VECTOR/MILVUS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "vector"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.patterns",
+    "name": "RAG Patterns",
+    "taxonomy_path": "AI/RAG/PATTERNS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "design"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.chunking",
+    "name": "Chunking Strategies",
+    "taxonomy_path": "AI/RAG/CHUNKING",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "preprocess"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.embeddings",
+    "name": "Embedding Models",
+    "taxonomy_path": "AI/RAG/EMBEDDINGS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "encoding"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.retrievers",
+    "name": "Retrievers",
+    "taxonomy_path": "AI/RAG/RETRIEVERS",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "retrieval"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.rankers",
+    "name": "Re-ranking",
+    "taxonomy_path": "AI/RAG/RANKING",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "retrieval"
+      ]
+    }
+  },
+  {
+    "skill_id": "rag.evaluation",
+    "name": "RAG Evaluation",
+    "taxonomy_path": "AI/RAG/EVALUATION",
+    "category": "AI",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "quality"
+      ]
+    }
+  },
+  {
+    "skill_id": "py.numpy",
+    "name": "NumPy",
+    "taxonomy_path": "DATA/ANALYTICS/NUMPY",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "array"
+      ]
+    }
+  },
+  {
+    "skill_id": "py.pandas",
+    "name": "Pandas",
+    "taxonomy_path": "DATA/ANALYTICS/PANDAS",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dataframe"
+      ]
+    }
+  },
+  {
+    "skill_id": "py.polars",
+    "name": "Polars",
+    "taxonomy_path": "DATA/ANALYTICS/POLARS",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "dataframe"
+      ]
+    }
+  },
+  {
+    "skill_id": "big.spark",
+    "name": "Apache Spark",
+    "taxonomy_path": "DATA/ANALYTICS/SPARK",
+    "category": "DATA",
+    "aliases": [
+      "Spark"
+    ],
+    "meta": {
+      "tags": [
+        "distributed"
+      ]
+    }
+  },
+  {
+    "skill_id": "big.pyspark",
+    "name": "PySpark",
+    "taxonomy_path": "DATA/ANALYTICS/PYSPARK",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "spark"
+      ]
+    }
+  },
+  {
+    "skill_id": "big.dask",
+    "name": "Dask",
+    "taxonomy_path": "DATA/ANALYTICS/DASK",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "distributed"
+      ]
+    }
+  },
+  {
+    "skill_id": "etl.dbt",
+    "name": "dbt",
+    "taxonomy_path": "DATA/TRANSFORM/DBT",
+    "category": "DATA",
+    "aliases": [
+      "data build tool"
+    ],
+    "meta": {
+      "tags": [
+        "sql-transform"
+      ]
+    }
+  },
+  {
+    "skill_id": "sched.cron",
+    "name": "cron",
+    "taxonomy_path": "DATA/SCHEDULING/CRON",
+    "category": "DATA",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "scheduling"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.pytest",
+    "name": "pytest",
+    "taxonomy_path": "ENGINEERING/QA/PYTEST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "testing"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.unittest",
+    "name": "unittest",
+    "taxonomy_path": "ENGINEERING/QA/UNITTEST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "testing"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.tox",
+    "name": "tox",
+    "taxonomy_path": "ENGINEERING/QA/TOX",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "testing"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.coverage",
+    "name": "coverage.py",
+    "taxonomy_path": "ENGINEERING/QA/COVERAGE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "coverage"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.jest",
+    "name": "Jest",
+    "taxonomy_path": "ENGINEERING/QA/JEST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "testing"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.vitest",
+    "name": "Vitest",
+    "taxonomy_path": "ENGINEERING/QA/VITEST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "testing"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.cypress",
+    "name": "Cypress",
+    "taxonomy_path": "ENGINEERING/QA/CYPRESS",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "e2e"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.playwright",
+    "name": "Playwright",
+    "taxonomy_path": "ENGINEERING/QA/PLAYWRIGHT",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "e2e"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.postman",
+    "name": "Postman",
+    "taxonomy_path": "ENGINEERING/QA/POSTMAN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "api"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.newman",
+    "name": "Newman",
+    "taxonomy_path": "ENGINEERING/QA/NEWMAN",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "api"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.k6",
+    "name": "k6",
+    "taxonomy_path": "ENGINEERING/QA/K6",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "load"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.locust",
+    "name": "Locust",
+    "taxonomy_path": "ENGINEERING/QA/LOCUST",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "load"
+      ]
+    }
+  },
+  {
+    "skill_id": "qa.jmeter",
+    "name": "JMeter",
+    "taxonomy_path": "ENGINEERING/QA/JMETER",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "load"
+      ]
+    }
+  },
+  {
+    "skill_id": "web.http",
+    "name": "HTTP",
+    "taxonomy_path": "WEB/PROTOCOLS/HTTP",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "protocol"
+      ]
+    }
+  },
+  {
+    "skill_id": "web.tcp_ip",
+    "name": "TCP/IP",
+    "taxonomy_path": "WEB/PROTOCOLS/TCPIP",
+    "category": "WEB",
+    "aliases": [
+      "TCP IP"
+    ],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "web.dns",
+    "name": "DNS",
+    "taxonomy_path": "WEB/PROTOCOLS/DNS",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "network"
+      ]
+    }
+  },
+  {
+    "skill_id": "web.tls",
+    "name": "TLS",
+    "taxonomy_path": "WEB/PROTOCOLS/TLS",
+    "category": "WEB",
+    "aliases": [
+      "SSL"
+    ],
+    "meta": {
+      "tags": [
+        "security"
+      ]
+    }
+  },
+  {
+    "skill_id": "web.ssh",
+    "name": "SSH",
+    "taxonomy_path": "WEB/PROTOCOLS/SSH",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "security",
+        "remote"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.rest",
+    "name": "REST",
+    "taxonomy_path": "WEB/API/REST",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "api"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.graphql",
+    "name": "GraphQL",
+    "taxonomy_path": "WEB/API/GRAPHQL",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "api"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.grpc",
+    "name": "gRPC",
+    "taxonomy_path": "WEB/API/GRPC",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "rpc"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.soap",
+    "name": "SOAP",
+    "taxonomy_path": "WEB/API/SOAP",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "legacy"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.openapi",
+    "name": "OpenAPI/Swagger",
+    "taxonomy_path": "WEB/API/OPENAPI",
+    "category": "WEB",
+    "aliases": [
+      "Swagger"
+    ],
+    "meta": {
+      "tags": [
+        "spec"
+      ]
+    }
+  },
+  {
+    "skill_id": "api.json_schema",
+    "name": "JSON Schema",
+    "taxonomy_path": "WEB/API/JSON_SCHEMA",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "spec"
+      ]
+    }
+  },
+  {
+    "skill_id": "mobile.react_native",
+    "name": "React Native",
+    "taxonomy_path": "ENGINEERING/MOBILE/REACT_NATIVE",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "mobile"
+      ]
+    }
+  },
+  {
+    "skill_id": "mobile.flutter",
+    "name": "Flutter",
+    "taxonomy_path": "ENGINEERING/MOBILE/FLUTTER",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "mobile"
+      ]
+    }
+  },
+  {
+    "skill_id": "mobile.android",
+    "name": "Android (Kotlin)",
+    "taxonomy_path": "ENGINEERING/MOBILE/ANDROID",
+    "category": "ENGINEERING",
+    "aliases": [
+      "Android"
+    ],
+    "meta": {
+      "tags": [
+        "mobile"
+      ]
+    }
+  },
+  {
+    "skill_id": "mobile.ios",
+    "name": "iOS (Swift)",
+    "taxonomy_path": "ENGINEERING/MOBILE/IOS",
+    "category": "ENGINEERING",
+    "aliases": [
+      "iOS"
+    ],
+    "meta": {
+      "tags": [
+        "mobile"
+      ]
+    }
+  },
+  {
+    "skill_id": "desktop.electron",
+    "name": "Electron",
+    "taxonomy_path": "ENGINEERING/DESKTOP/ELECTRON",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "desktop"
+      ]
+    }
+  },
+  {
+    "skill_id": "desktop.tauri",
+    "name": "Tauri",
+    "taxonomy_path": "ENGINEERING/DESKTOP/TAURI",
+    "category": "ENGINEERING",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "desktop"
+      ]
+    }
+  },
+  {
+    "skill_id": "analytics.ga4",
+    "name": "Google Analytics 4",
+    "taxonomy_path": "PRODUCT/ANALYTICS/GA4",
+    "category": "PRODUCT",
+    "aliases": [
+      "GA4"
+    ],
+    "meta": {
+      "tags": [
+        "analytics"
+      ]
+    }
+  },
+  {
+    "skill_id": "analytics.segment",
+    "name": "Segment",
+    "taxonomy_path": "PRODUCT/ANALYTICS/SEGMENT",
+    "category": "PRODUCT",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cdp"
+      ]
+    }
+  },
+  {
+    "skill_id": "analytics.mixpanel",
+    "name": "Mixpanel",
+    "taxonomy_path": "PRODUCT/ANALYTICS/MIXPANEL",
+    "category": "PRODUCT",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "analytics"
+      ]
+    }
+  },
+  {
+    "skill_id": "product.launchdarkly",
+    "name": "LaunchDarkly",
+    "taxonomy_path": "PRODUCT/FEATURE_FLAGS/LAUNCHDARKLY",
+    "category": "PRODUCT",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "flags"
+      ]
+    }
+  },
+  {
+    "skill_id": "product.optimizely",
+    "name": "Optimizely",
+    "taxonomy_path": "PRODUCT/EXPERIMENT/OPTIMIZELY",
+    "category": "PRODUCT",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "ab-test"
+      ]
+    }
+  },
+  {
+    "skill_id": "product.sentry",
+    "name": "Sentry",
+    "taxonomy_path": "PRODUCT/QUALITY/SENTRY",
+    "category": "PRODUCT",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "errors"
+      ]
+    }
+  },
+  {
+    "skill_id": "cdn.cloudflare",
+    "name": "Cloudflare",
+    "taxonomy_path": "WEB/INFRA/CLOUDFLARE",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cdn",
+        "dns"
+      ]
+    }
+  },
+  {
+    "skill_id": "cdn.fastly",
+    "name": "Fastly",
+    "taxonomy_path": "WEB/INFRA/FASTLY",
+    "category": "WEB",
+    "aliases": [],
+    "meta": {
+      "tags": [
+        "cdn"
+      ]
+    }
+  }
+]
