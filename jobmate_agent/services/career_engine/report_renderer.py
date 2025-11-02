@@ -96,42 +96,99 @@ class ReportRenderer:
         missing_skills = result.get("missing_skills", [])
         matched_skills = result.get("matched_skills", [])
 
-        # Show missing skills first (most critical)
-        _section("Missing Skills", missing_skills)
+        # Separate required vs nice-to-have skills
+        required_missing = [
+            s for s in missing_skills if s.get("is_required") is not False
+        ]
+        nice_to_have_missing = [
+            s for s in missing_skills if s.get("is_required") is False
+        ]
 
-        # Filter and show hot tech missing
-        hot_missing = [s for s in missing_skills if s.get("is_hot_tech")]
+        required_matched = [
+            s for s in matched_skills if s.get("is_required") is not False
+        ]
+        nice_to_have_matched = [
+            s for s in matched_skills if s.get("is_required") is False
+        ]
+
+        # Show required missing skills first (most critical)
+        if required_missing:
+            _section("Missing Skills (Required)", required_missing)
+
+        # Filter and show hot tech missing (from required only)
+        hot_missing = [s for s in required_missing if s.get("is_hot_tech")]
         if hot_missing:
-            _section("Hot Tech Missing", hot_missing)
+            _section("Hot Tech Missing (Required)", hot_missing)
 
-        # Filter and show in-demand missing
-        indemand_missing = [s for s in missing_skills if s.get("is_in_demand")]
+        # Filter and show in-demand missing (from required only)
+        indemand_missing = [s for s in required_missing if s.get("is_in_demand")]
         if indemand_missing:
-            _section("In-demand Missing", indemand_missing)
+            _section("In-demand Missing (Required)", indemand_missing)
 
-        # Filter matched skills by status
-        underqualified = [
-            s for s in matched_skills if s.get("status") == "underqualified"
+        # Filter required matched skills by status
+        required_underqualified = [
+            s for s in required_matched if s.get("status") == "underqualified"
         ]
-        meets_or_exceeds = [
-            s for s in matched_skills if s.get("status") == "meets_or_exceeds"
+        required_meets_or_exceeds = [
+            s for s in required_matched if s.get("status") == "meets_or_exceeds"
         ]
 
-        # Show underqualified skills (present but below required level)
-        if underqualified:
+        # Show required underqualified skills (present but below required level)
+        if required_underqualified:
             _section(
-                "Underqualified Skills (Present but Below Required Level)",
-                underqualified,
+                "Underqualified Skills (Required - Present but Below Required Level)",
+                required_underqualified,
                 show_levels=True,
             )
 
-        # Show skills that meet or exceed requirements
-        if meets_or_exceeds:
-            _section("Skills Meeting Requirements", meets_or_exceeds, show_levels=True)
+        # Show required skills that meet or exceed requirements
+        if required_meets_or_exceeds:
+            _section(
+                "Skills Meeting Requirements (Required)",
+                required_meets_or_exceeds,
+                show_levels=True,
+            )
 
-        # Show all matched skills for completeness (only if status fields not set)
-        if matched_skills and not underqualified and not meets_or_exceeds:
-            _section("Matched Skills", matched_skills, show_levels=True)
+        # Show all required matched skills for completeness (only if status fields not set)
+        if (
+            required_matched
+            and not required_underqualified
+            and not required_meets_or_exceeds
+        ):
+            _section("Matched Skills (Required)", required_matched, show_levels=True)
+
+        # Show nice-to-have missing skills
+        if nice_to_have_missing:
+            _section("Nice to Have - Missing Skills", nice_to_have_missing)
+
+        # Show nice-to-have matched skills
+        if nice_to_have_matched:
+            nice_to_have_underqualified = [
+                s for s in nice_to_have_matched if s.get("status") == "underqualified"
+            ]
+            nice_to_have_meets = [
+                s for s in nice_to_have_matched if s.get("status") == "meets_or_exceeds"
+            ]
+
+            if nice_to_have_underqualified:
+                _section(
+                    "Nice to Have - Underqualified Skills",
+                    nice_to_have_underqualified,
+                    show_levels=True,
+                )
+            if nice_to_have_meets:
+                _section(
+                    "Nice to Have - Skills Meeting Requirements",
+                    nice_to_have_meets,
+                    show_levels=True,
+                )
+            # Fallback if no status
+            if not nice_to_have_underqualified and not nice_to_have_meets:
+                _section(
+                    "Nice to Have - Matched Skills",
+                    nice_to_have_matched,
+                    show_levels=True,
+                )
 
         # Show all resume skills
         resume_skills = result.get("resume_skills", [])
