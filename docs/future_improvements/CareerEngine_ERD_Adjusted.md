@@ -1,19 +1,19 @@
 # Adjusted Lightweight ERD (Mermaid)
 
-This diagram reflects the **actual models** in your codebase (Resume with `parsed_json`, JobListing, SkillGapReport/Status), adds optional **run_log** for RL eval, and shows a **RoleGraph** sidecar. It avoids hypothetical `DOC_TEXT` and uses your existing persistence patterns.
+This diagram reflects the **actual models** in your codebase (Resume, JobListing, SkillGapReport/Status), adds **DocumentExtraction** caching table (v5 Phase A), optional **run_log** for RL eval, and shows a **RoleGraph** sidecar. It aligns with the v5 (Aligned) execution plan.
 
-**Status**: ✅ Updated based on corrected CareerEngine_Uplift_Adjusted.md plan.
+**Status**: ✅ Updated to align with v5 (Aligned) execution plan — Phase A caching via `DocumentExtraction` table.
 
 ---
 
-## 1) Core Models, Engine Artifacts, and (Optional) Run Log
+## 1) Core Models, Engine Artifacts, Document Extraction Cache, and (Optional) Run Log
 
 ```mermaid
 erDiagram
     RESUME {
         BIGINT id PK
         TEXT user_id
-        JSONB parsed_json "stores raw_text + cached extraction (key: extracted_json_with_levels)"
+        JSONB parsed_json "stores raw_text"
         INT processing_run_id
         TIMESTAMP created_at
     }
@@ -28,6 +28,23 @@ erDiagram
         JSONB preferred_skills
         TEXT external_url
         TIMESTAMP created_at
+    }
+
+    DOCUMENT_EXTRACTION {
+        BIGINT id PK
+        VARCHAR doc_type "resume|jd"
+        VARCHAR text_sha256 "SHA256 hash"
+        VARCHAR extractor_version "e.g., v2-langchain-best-practices"
+        VARCHAR model_id "e.g., gpt-4o"
+        VARCHAR prompt_version "e.g., v1.0"
+        VARCHAR status "running|ready|failed"
+        JSONB result_json "cached extraction"
+        JSONB user_corrections "user overrides"
+        JSONB diag "diagnostics"
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        TIMESTAMP completed_at
+        "UNIQUE(doc_type, text_sha256, extractor_version, model_id, prompt_version)"
     }
 
     SKILL_GAP_REPORT {
@@ -83,13 +100,30 @@ erDiagram
 ```
 
 **Notes**
-- `parsed_json` is used to cache resume extraction with key `extracted_json_with_levels`; validation via `extractor_version`. JD enrichment happens on the fly from `description/requirements` (plus structured arrays when present).
-- `RUN_LOG` is **optional**; you can start with logging to `ProcessingRun.params_json` under key `bandit_run` for shadow mode. Add this table later if you need SQL-queryable RL analysis.
-- `PROCESSING_RUN.params_json` now stores: `{match_strategy: {...}, score_weights: {...}, extraction: {...}, bandit_run: {obs, act, reward}}` - full provenance chain.
+- **`DOCUMENT_EXTRACTION` (v5 Phase A)**: Primary caching table for resume/JD skill extraction results. Uses composite unique key `(doc_type, text_sha256, extractor_version, model_id, prompt_version)` to support idempotent getters with row-level locking (`SELECT FOR UPDATE SKIP LOCKED`). Status flow: `running` → `ready` → served to getters. User corrections can overlay cached results.
+- **`RESUME.parsed_json`**: Still stores raw text; extraction results now cached in `DOCUMENT_EXTRACTION` table instead.
+- **`RUN_LOG`**: **Optional**; you can start with logging to `ProcessingRun.params_json` under key `bandit_run` for shadow mode. Add this table later if you need SQL-queryable RL analysis.
+- **`PROCESSING_RUN.params_json`**: Stores `{match_strategy: {...}, score_weights: {...}, extraction: {...}, bandit_run: {obs, act, reward}}` - full provenance chain.
 
 ---
 
-## 2) RoleGraph Sidecar (GraphRAG) - Optional Phase 5
+## 2) Document Extraction Cache Details (v5 Phase A)
+
+**Key Features:**
+- **Idempotent getters**: `get_resume_skills()` and `get_jd_skills()` use `DocumentExtraction` for caching
+- **Concurrent-safe**: Row-level locking prevents duplicate extractions
+- **Version-aware**: Cache invalidates on `extractor_version`, `model_id`, or `prompt_version` changes
+- **User corrections**: `user_corrections JSONB` field allows HITL overlays (chat mode) without invalidating cache
+
+**Indexes:**
+- Lookup index on composite key columns
+- Partial index on `status='running'` for efficient join-wait queries
+
+**Relationship**: No direct FK relationships; looked up by text hash + version components. Used by `CareerEngine` extraction phase (Phase A integration).
+
+---
+
+## 3) RoleGraph Sidecar (GraphRAG) - Optional Phase 5
 
 ```mermaid
 erDiagram
@@ -156,23 +190,30 @@ erDiagram
 
 ---
 
-## 5) Diagnostics Surfaces for CRAG & RL
+## 5) Diagnostics Surfaces for CRAG & RL (v5 Phases B-C)
 
-- **Mapper diagnostics** (`get_last_mapping_diagnostics()`): `{total_tokens_processed, total_tasks_processed, total_accepted, total_dropped, total_ambiguous, average_cutoff, strategy, skill_diagnostics: [{token, total_hits, accepted_count, dropped_count, literal_text_rejected, cutoff_used, top_scores}], task_diagnostics: [...]}`.
-- **CRAG gate summary** (new): `{total_gate_actions, actions: [{token, action, topk_increased, recipe_switched, floor_adjusted}], summary: {increased_topk: count, switched_recipe: count, ...}}`.
+- **Mapper diagnostics** (`get_last_mapping_diagnostics()`) — v5 Phase B: `{total_tokens_processed, total_tasks_processed, total_accepted, total_dropped, total_ambiguous, average_cutoff, strategy, skill_diagnostics: [{token, total_hits, accepted_count, dropped_count, literal_text_rejected, cutoff_used, top_scores}], task_diagnostics: [...]}`.
+- **CRAG gate summary** (v5 Phase C): `{total_gate_actions, actions: [{token, action, topk_increased, recipe_switched, floor_adjusted}], summary: {increased_topk: count, switched_recipe: count, ...}}`.
+- **HITL diagnostics** (v5 Phase F): `{mode: "off|auto", skipped: boolean, assumptions: [...]}` attached to `analysis.extras.hitl`.
 - **Analyzer diagnostics**: `{resume_items, job_items, resume_skills, matched_count, missing_count}`.
 - **Perf metrics**: `{tokens_used, latency_ms, extraction_time_ms, mapping_time_ms, analysis_time_ms}`.
-- **Bandit observations**: `{extractor_stats, mapper_diagnostics, gap_summary, tokens, time}`.
-- Attach these in `diagnostics_json` (RUN_LOG), `ProcessingRun.params_json['bandit_run']`, and return alongside `analysis_json` for offline evaluation.
+- **Bandit observations** (optional): `{extractor_stats, mapper_diagnostics, gap_summary, tokens, time}`.
+- Attach these in `diagnostics_json` (RUN_LOG), `ProcessingRun.params_json['bandit_run']`, `DocumentExtraction.diag`, and return alongside `analysis_json` for offline evaluation.
 
 ---
 
 ## Summary
 
-This ERD reflects the **current data model** with enhancements for:
-1. **Request-scoped overrides**: Bandit actions stored in `RUN_LOG` or `ProcessingRun.params_json`
-2. **CRAG gate**: Diagnostics added to mapper output for progressive trigger decisions
-3. **Optional baseline cache**: Deferred to Phase 4 based on performance needs
-4. **GraphRAG sidecar**: Completely optional, Phase 5 implementation
+This ERD reflects the **v5 (Aligned) execution plan** data model with enhancements for:
+1. **Phase A - Document Extraction Cache**: `DOCUMENT_EXTRACTION` table for idempotent extraction caching with row-level locking (primary caching mechanism).
+2. **Phase B - Request-scoped overrides & diagnostics**: Config overrides persisted to `ProcessingRun.params_json`, diagnostics surfaced in `analysis.extras`.
+3. **Phase C - CRAG gate**: Diagnostics added to mapper output for progressive trigger decisions; bounded retries with conservative fallbacks.
+4. **Phase F - HITL diagnostics**: `analysis.extras.hitl` captures mode, skipped flags, and assumptions (chat-only when `hitl_mode="auto"`).
+5. **Optional baseline mapping cache**: Deferred to Phase 4 based on performance needs (complements `DOCUMENT_EXTRACTION`).
+6. **Optional `RUN_LOG`**: Can start with logging to `ProcessingRun.params_json['bandit_run']` instead; add table if SQL-queryable RL analysis needed.
+7. **GraphRAG sidecar**: Completely optional, Phase 5+ implementation.
 
-**Key Point**: Start with `RUN_LOG` as optional (can log to `ProcessingRun.params_json` instead). Add tables only as needed for SQL analysis.
+**Key Points**:
+- **`DOCUMENT_EXTRACTION` is the primary cache** (Phase A); replaces previous `parsed_json` extraction caching.
+- **`RUN_LOG` is optional**; start with `ProcessingRun.params_json` logging for shadow mode.
+- Add tables only as needed for SQL analysis or performance optimization.
