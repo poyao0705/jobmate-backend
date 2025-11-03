@@ -20,7 +20,7 @@ This file defines the relational data model for the **current implementation** i
 
 ## 1) Current Implementation (✓)
 
-### User ✓ (legacy auth)
+### User ✓ (legacy auth - templates only)
 - `id` PK  
 - `username` TEXT UNIQUE  
 - `email` TEXT UNIQUE  
@@ -28,14 +28,16 @@ This file defines the relational data model for the **current implementation** i
 - `is_premium` BOOLEAN DEFAULT FALSE
 - `membership_plan` TEXT DEFAULT 'free'
 - `membership_renewal_date` DATE NULL
-- `email_notifications` BOOLEAN DEFAULT TRUE
+- `email_notifications` BOOLEAN DEFAULT TRUE  
+- Notes: Legacy model used only for server-rendered Jinja templates. Primary authentication uses Auth0 with UserProfile model. Not used by Next.js frontend.
 
 ### Chat ✓
 - `id` PK  
-- `user_id` FK → User.id  
+- `user_id` FK → UserProfile.id (TEXT)  
 - `title` TEXT  
 - `model` TEXT *(DeepSeek integration)*
-- `timestamp` DATETIME
+- `timestamp` DATETIME  
+- Notes: References UserProfile (Auth0 identity), not legacy User model.
 
 ### ChatMessage ✓
 - `id` PK  
@@ -174,6 +176,25 @@ This file defines the relational data model for the **current implementation** i
 - `added_at` DATETIME WITH TZ  
 - UNIQUE(`user_id`, `job_listing_id`) name=`uix_user_job_listing`
 
+### SkillGapStatus ✓
+- `id` PK  
+- `user_id` FK → UserProfile.id (TEXT) INDEX  
+- `job_listing_id` FK → JobListing.id INDEX  
+- `status` VARCHAR(32) NOT NULL DEFAULT 'generating' INDEX *("generating" | "ready")*  
+- `created_at` DATETIME WITH TZ  
+- `updated_at` DATETIME WITH TZ  
+- UNIQUE(`user_id`, `job_listing_id`) name=`uix_gap_status_user_job`  
+- Notes: Tracks gap generation status for quick lookups without querying heavy SkillGapReport table. Used for polling and state management.
+
+### PreloadedContext ✓
+- `id` PK  
+- `user_id` FK → UserProfile.id (TEXT) INDEX  
+- `job_listing_id` FK → JobListing.id INDEX NULL  
+- `doc_type` VARCHAR(50) NOT NULL *("resume" | "job" | "gap" | "profile")*  
+- `content` TEXT NOT NULL  
+- `created_at` DATETIME  
+- Notes: Stores short precomputed context snippets for user+job to be used as chat system messages. Lightweight fallback store used while Chroma-based embeddings are built or unavailable.
+
 ---
 
 ## 1.1) O*NET Integration Schema
@@ -215,13 +236,16 @@ In the current skill-only mode, normalized skills are computed at runtime; they 
 
 ### SkillGapReport ✓
 - `id` PK  
-- `user_id` FK → User.id  
+- `user_id` FK → UserProfile.id (TEXT)  
 - `resume_id` FK → Resume.id  
 - `job_listing_id` FK → JobListing.id  
 - `matched_skills_json` JSON *([{skill_id, evidence, level, confidence}])*  
 - `missing_skills_json` JSON *([{skill_id, required_level, rationale}])*  
 - `weak_skills_json` JSON NULL  
+- `resume_skills_json` JSON NULL *([{skill_id, match, candidate_level, score}]) - all detected resume skills with levels*  
 - `score` REAL *(0–100)*  
+- `analysis_version` VARCHAR NULL *("version identifier for analysis algorithm")*  
+- `analysis_json` JSON NULL *(additional analysis metadata)*  
 - `report_note_id` FK → Note.id NULL  
 - `processing_run_id` FK → ProcessingRun.id  
 - `created_at` TIMESTAMP
@@ -249,22 +273,22 @@ In the current skill-only mode, normalized skills are computed at runtime; they 
 ## 3) Relationships (overview)
 
 ### Current Implementation (✓)
-- **User 1–N** Chat, Note, Task, Goal  
-- **User 1–1** Membership, UserSettings  
+- **User 1–N** Note, Task, Goal *(legacy - templates only)*  
+- **User 1–1** Membership, UserSettings *(legacy - templates only)*  
+- **UserProfile 1–N** Chat, Resume, JobCollection, SkillGapStatus, PreloadedContext  
+- **UserProfile N–N** JobListing via **JobCollection**  
 - **Chat 1–N** ChatMessage  
 - **Goal 1–N** Task  
 - **Task 1–N** Note *(optional)*  
-- **UserProfile 1–N** Resume  
-- **UserProfile N–N** JobListing via **JobCollection**  
 - **Skill 1–N** SkillAlias  
-- **Resume N–1** ProcessingRun
+- **Resume N–1** ProcessingRun  
+- **JobListing 1–N** JobCollection, SkillGapStatus, PreloadedContext
 
 ### AI Features Implementation (✓)
-- **Resume 1–N** ResumeSkill  
-- **JobListing 1–N** JobSkill  
-- **Skill 1–N** ResumeSkill, JobSkill, LearningItem  
+- **Skill 1–N** LearningItem  
 - **SkillGapReport N–N** LearningItem via **ReportLearningItem**  
 - **ProcessingRun** referenced by SkillGapReport  
+- **UserProfile N–N** JobListing via **SkillGapStatus** *(tracks generation status)*  
 - **Task.learning_item_id** FK → LearningItem *(integrates with current Task model)*
 
 ---
@@ -302,6 +326,8 @@ Use **Chroma** collections; only foreign keys/refs are stored in SQL. Vectorizat
 
 ### AI Features Implementation (current mode)
 - `SkillGapReport(user_id, job_listing_id, resume_id)`  
+- `SkillGapStatus(user_id, job_listing_id)` UNIQUE (`uix_gap_status_user_job`)  
+- `PreloadedContext(user_id, job_listing_id)`  
 - `Task.learning_item_id` *(integrates with current Task)*
 
 ---
@@ -325,7 +351,7 @@ CREATE TABLE chats (
   id INTEGER PRIMARY KEY,
   title TEXT,
   timestamp DATETIME,
-  user_id INTEGER REFERENCES users(id),
+  user_id TEXT REFERENCES user_profiles(id),
   model TEXT
 );
 
@@ -469,19 +495,46 @@ CREATE TABLE job_collections (
   added_at DATETIME,
   UNIQUE(user_id, job_listing_id)
 );
+
+CREATE TABLE skill_gap_statuses (
+  id INTEGER PRIMARY KEY,
+  user_id TEXT REFERENCES user_profiles(id) NOT NULL,
+  job_listing_id INTEGER REFERENCES job_listings(id) NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'generating',
+  created_at DATETIME WITH TIME ZONE,
+  updated_at DATETIME WITH TIME ZONE,
+  UNIQUE(user_id, job_listing_id)
+);
+CREATE INDEX ix_skill_gap_statuses_user_id ON skill_gap_statuses(user_id);
+CREATE INDEX ix_skill_gap_statuses_job_listing_id ON skill_gap_statuses(job_listing_id);
+CREATE INDEX ix_skill_gap_statuses_status ON skill_gap_statuses(status);
+
+CREATE TABLE preloaded_contexts (
+  id INTEGER PRIMARY KEY,
+  user_id TEXT REFERENCES user_profiles(id) NOT NULL,
+  job_listing_id INTEGER REFERENCES job_listings(id),
+  doc_type VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  created_at DATETIME
+);
+CREATE INDEX ix_preloaded_contexts_user_id ON preloaded_contexts(user_id);
+CREATE INDEX ix_preloaded_contexts_job_listing_id ON preloaded_contexts(job_listing_id);
 ```
 
 ### AI Features Implementation (current mode)
 ```sql
 CREATE TABLE skill_gap_reports (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES users(id),
+  user_id TEXT NOT NULL REFERENCES user_profiles(id),
   resume_id INTEGER NOT NULL REFERENCES resumes(id),
   job_listing_id INTEGER NOT NULL REFERENCES job_listings(id),
   matched_skills_json JSON NOT NULL,
   missing_skills_json JSON NOT NULL,
   weak_skills_json JSON,
+  resume_skills_json JSON,
   score REAL NOT NULL,
+  analysis_version VARCHAR,
+  analysis_json JSON,
   report_note_id INTEGER REFERENCES notes(id),
   processing_run_id INTEGER NOT NULL REFERENCES processing_runs(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -558,6 +611,18 @@ ALTER TABLE tasks ADD COLUMN learning_item_id INTEGER REFERENCES learning_items(
 
 // SkillGapReport.missing_skills_json
 [{ "skill_id": "cloud.aws.ec2", "required_level": "basic", "rationale": "Listed in JD, not found in resume" }]
+
+// SkillGapReport.resume_skills_json
+[{ "skill_id": "fe.react", "match": { "skill_id": "fe.react", "confidence": 0.92 }, "candidate_level": "intermediate", "score": 0.85 }]
+
+// SkillGapReport.analysis_json
+{ "extraction_method": "llm", "normalization_threshold": 0.6, "total_skills_detected": 15 }
+
+// SkillGapStatus.status
+"generating" | "ready"
+
+// PreloadedContext.content
+"Short precomputed context snippet for chat system messages..."
 ```
 
 ---

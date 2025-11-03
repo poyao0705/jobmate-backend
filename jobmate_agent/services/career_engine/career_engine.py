@@ -23,7 +23,6 @@ class CareerEngine:
         self.mapper = OnetMapper(onet_chroma)
         self.analyzer = GapAnalyzer(llm)
         self.renderer = ReportRenderer()
-        self._extractor_mode = (config.extraction.mode or "current").lower()
 
     def analyze_resume_vs_job(
         self,
@@ -180,32 +179,26 @@ class CareerEngine:
             )
             raise ValueError("Either job_text or job_id must be provided")
 
-        # Log extractor mode and job text diagnostics
+        # Log job text diagnostics
         job_text_preview = (job_text or "")[:300].replace("\n", " ")
         logger.info(
-            f"[GAP] CareerEngine.analyze: extractor_mode={self._extractor_mode}, job_title='{job_title or ''}', company='{company or ''}', job_text_len={len(job_text or '')}, preview='{job_text_preview}'"
+            f"[GAP] CareerEngine.analyze: job_title='{job_title or ''}', company='{company or ''}', job_text_len={len(job_text or '')}, preview='{job_text_preview}'"
         )
 
-        # 1) Extract with level information (mode-gated)
+        # 1) Extract with level information using all-in-one extractor
         try:
-            if self._extractor_mode == "all_in_one":
-                res_aio = self.extractor.extract_all_in_one(
-                    resume_text, is_job_description=False
-                )
-                job_aio = self.extractor.extract_all_in_one(
-                    job_text, is_job_description=True
-                )
-                res_struct = self._adapt_all_in_one(res_aio)
-                job_struct = self._adapt_all_in_one(job_aio)
-            else:
-                res_struct = self._ensure_resume_cached_extract_with_levels(resume)
-                job_struct = self.extractor.extract_with_levels(
-                    job_text, is_job_description=True
-                )
+            res_aio = self.extractor.extract_all_in_one(
+                resume_text, is_job_description=False
+            )
+            job_aio = self.extractor.extract_all_in_one(
+                job_text, is_job_description=True
+            )
+            res_struct = self._adapt_all_in_one(res_aio)
+            job_struct = self._adapt_all_in_one(job_aio)
         except Exception as e:
             jt_snippet = (job_text or "")[:200].replace("\n", " ")
             logger.exception(
-                f"[GAP] CareerEngine.analyze: extraction failed mode={self._extractor_mode}, job_text_len={len(job_text or '')}, snippet='{jt_snippet}'"
+                f"[GAP] CareerEngine.analyze: extraction failed, job_text_len={len(job_text or '')}, snippet='{jt_snippet}'"
             )
             raise
 
@@ -280,7 +273,6 @@ class CareerEngine:
                 getattr(job_listing, "external_url", None) if job_listing else None
             ),
             "job_source": getattr(job_listing, "source", None) if job_listing else None,
-            "extractor_mode": self._extractor_mode,
             "extractor_version": getattr(self.extractor, "version", None),
             "analyzer_version": "gap-analyzer.v1",
         }
@@ -376,46 +368,6 @@ class CareerEngine:
             f"[GAP] CareerEngine.analyze: Prepared canonical payload for analysis_id={rec_id}"
         )
         return legacy
-
-    def _ensure_resume_cached_extract(self, resume: Resume) -> Dict[str, Any]:
-        pj = resume.parsed_json or {}
-        if (
-            pj.get("extracted_json")
-            and pj.get("extractor_version") == self.extractor.version
-        ):
-            return pj["extracted_json"]
-        struct = self.extractor.extract(get_resume_text(resume))
-        pj["extracted_json"] = struct
-        pj["extractor_version"] = self.extractor.version
-        resume.parsed_json = pj
-        # In test/offline mode there may be no app context; skip commit
-        try:
-            db.session.commit()
-        except Exception:
-            pass
-        return struct
-
-    def _ensure_resume_cached_extract_with_levels(
-        self, resume: Resume
-    ) -> Dict[str, Any]:
-        """Extract resume with level information, with caching."""
-        pj = resume.parsed_json or {}
-        cache_key = "extracted_json_with_levels"
-        if pj.get(cache_key) and pj.get("extractor_version") == self.extractor.version:
-            return pj[cache_key]
-
-        struct = self.extractor.extract_with_levels(
-            get_resume_text(resume), is_job_description=False
-        )
-        pj[cache_key] = struct
-        pj["extractor_version"] = self.extractor.version
-        resume.parsed_json = pj
-        # In test/offline mode there may be no app context; skip commit
-        try:
-            db.session.commit()
-        except Exception:
-            pass
-        return struct
 
     def _map_with_levels(
         self, struct: Dict[str, Any], text: str, is_resume: bool

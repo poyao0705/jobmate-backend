@@ -13,7 +13,7 @@
 ## 1. User Stories
 
 ### Current Implementation (✓)
-1. As a user, I can register and login to access my personal dashboard.
+1. As a user, I can authenticate via Auth0 (JWT tokens) to access my personal dashboard. *(Legacy User model exists only for server-rendered templates)*
 2. As a user, I can create and manage goals with descriptions.
 3. As a user, I can create tasks with start/end dates and associate them with goals.
 4. As a user, I can view my tasks in a calendar interface and mark them as complete.
@@ -37,7 +37,7 @@
 ## 2. UX Flows
 
 ### Current Implementation (✓)
-- **Login/Register → Dashboard:** Authentication → user dashboard with goals, tasks, and chat access.
+- **Auth0 Login → Dashboard:** Auth0 JWT authentication → user dashboard with goals, tasks, and chat access. *(Legacy login/register routes exist only for server-rendered templates)*
 - **Goal Management:** Create/edit/delete goals with descriptions.
 - **Task Management:** Create tasks with dates, associate with goals, mark complete.
 - **Calendar View:** Drag-and-drop task scheduling, date-based task filtering.
@@ -60,11 +60,11 @@
 ## 3. Screens
 
 ### Current Implementation (✓)
-- `/` Landing page with login/register
-- `/login` Authentication form
-- `/dashboard` User dashboard with goals, tasks, chat access
+- `/` Landing page with Auth0 login (Next.js frontend)
+- `/profile` User profile management (Auth0 UserProfile)
 - `/work_goal` Task management with calendar and notes
 - `/chat_help` AI chat interface
+- *(Legacy `/login`, `/register`, `/dashboard` routes exist only for server-rendered Jinja templates)*
 
 ### Implemented AI Features (✓)
 - `/` Landing: Auth0 integration, job list, contact dialog
@@ -80,25 +80,26 @@
 ## 4. API Contracts
 
 ### Current Implementation (✓)
-- `POST /login` → Authentication with username/email + password
-- `POST /register` → User registration
-- `GET /dashboard` → User dashboard with goals, tasks, chat access
-- `POST /work_goal/select_goal/<id>` → Select current goal
-- `GET /work_goal/calendar_data` → Calendar events (tasks)
-- `POST /work_goal/calendar_update` → Update task dates
-- `POST /work_goal/todo_mark_complete` → Toggle task completion
-- `POST /work_goal/add_note` → Create new note
-- `POST /work_goal/update_note` → Update note content
-- `POST /work_goal/delete_note` → Delete note
-- `POST /chat_help` → AI chat with DeepSeek API
-- `POST /store_note/<message_id>` → Save AI response as note
+**API Routes (all under `/api/*` prefix, require JWT authentication):**
+- `POST /api/chat/*` → Chat functionality (see chat.py)
+- `GET /api/backend/tasks/*` → Task management endpoints
+- `GET /api/user-profile/*` → User profile management
+- `GET /api/context/*` → Context management
+- *(Legacy routes `/login`, `/register`, `/dashboard`, `/work_goal/*`, `/chat_help` exist only for server-rendered templates and are not used by Next.js frontend)*
 
 ### Implemented AI Features (✓)
 > Job creation uses the existing jobs API. In current mode, normalized skills are used in-memory and persisted inside `SkillGapReport` JSON fields.
 
-- `POST /api/backend/resume/upload` → `{ resume_id, message, chunks_created, text_length, s3_key, bucket }`
-- `GET /api/backend/resume/<id>/download-url` → `{ download_url, filename?, content_type?, file_size?, expires_in? }`
-- **Career Engine**: Direct Python service for skill gap analysis (implemented; REST endpoints pending)
+- `POST /api/backend/resume/upload` → `{ resume_id, message, chunks_created, text_length, s3_key, bucket }` *(requires JWT)*
+- `GET /api/backend/resume/<id>/download-url` → `{ download_url, filename?, content_type?, file_size?, expires_in? }` *(requires JWT)*
+- `POST /api/backend/gap/run` → Trigger gap analysis (background processing) *(requires JWT)*
+- `GET /api/gap/by-job/<job_id>` → Get gap report by job ID *(requires JWT)*
+- `DELETE /api/backend/gap/by-job/<job_id>` → Delete gap report *(requires JWT)*
+- `GET /api/job-collections` → Get saved jobs with gap status *(requires JWT)*
+- `POST /api/job-collections/<job_id>` → Save job and trigger gap analysis *(requires JWT)*
+- `DELETE /api/job-collections/<job_id>` → Unsave job *(requires JWT)*
+- **Career Engine**: Complete skill-only analysis pipeline with level-aware gap analysis
+- **SkillGapStatus**: Status tracking for gap generation (`generating`/`ready`) for efficient polling
 
 ### Planned AI Features (○)
 - `POST /api/learn/generate` → `{ learning_item_ids[] }` (Body: `{ gap_report_id }`)
@@ -115,20 +116,22 @@
 ## 5. Non-Functional
 
 ### Current Implementation (✓)
-- **Authentication**: Secure password hashing with bcrypt
-- **Database**: SQLite with SQLAlchemy ORM
+- **Authentication**: Primary authentication via Auth0 JWT tokens (Bearer tokens) validated by `jwt_auth.py`. Legacy User model with bcrypt exists only for server-rendered templates.
+- **Database**: PostgreSQL/SQLite with SQLAlchemy ORM and Alembic migrations
 - **AI Integration**: DeepSeek API for chat functionality
-- **UI**: Jinja2 templates with responsive CSS
-- **Error handling**: Flash messages for user feedback
-- **Session management**: Flask sessions for user state
+- **Frontend**: Next.js 15 (App Router) with Auth0 integration, TypeScript, TailwindCSS, shadcn/ui
+- **Backend API**: Flask with `/api/*` blueprint structure, CORS enabled for frontend
+- **Error handling**: JSON error responses for API, flash messages for legacy templates
+- **User Model**: `UserProfile` (Auth0 identity, id = Auth0 `sub`) owns AI entities; legacy `User` model for templates only
 
 ### Implemented AI Features (✓)
-- **Chunking**: Resume default 600/60, Job TBD. Top-k=6–10 for retrieval.
-- **Models**: See ARCHITECTURE.md §2 and DATA_MODEL.md.
+- **Skill-Only Mode**: Normalized skills computed at runtime; persisted in `SkillGapReport` JSON fields (no `ResumeSkill`/`JobSkill` tables).
+- **Models**: See ARCHITECTURE.md §2 and DATA_MODEL.md. Includes `SkillGapStatus` for status tracking and `PreloadedContext` for chat context snippets.
 - **Error handling**: 400 for bad input; 422 for parsing failures; 500 for unexpected.
 - **Next.js SSR** for `/gap/[id]` (fast first paint), client hydration for interactivity.
 - **Tailwind** for styles; shadcn/ui for accessible components.
 - **O*NET Integration**: 299 core skills with 32,681 technology examples, vector embeddings.
+- **Gap Analysis**: Background processing with status tracking via `SkillGapStatus` model for efficient polling.
 
 ### Planned AI Features (○)
 - **Export**: JSON or CSV; UTF-8, RFC4180 for CSV.
@@ -146,7 +149,7 @@
 ## 6. Acceptance Criteria
 
 ### Current Implementation (✓)
-- User can register, login, and access dashboard
+- User can authenticate via Auth0 and access dashboard (Next.js frontend)
 - Goals can be created, edited, and deleted
 - Tasks can be created with dates and associated with goals
 - Calendar interface allows drag-and-drop task scheduling

@@ -110,7 +110,6 @@ class AnalysisContext(BaseModel):
     job_location: Optional[str] = None
     job_url: Optional[str] = None
     job_source: Optional[str] = None
-    extractor_mode: Optional[str] = None
     extractor_version: Optional[str] = None
     analyzer_version: Optional[str] = None
     mapper_version: Optional[str] = None

@@ -85,8 +85,7 @@ class ExtractionConfig:
     # Nice-to-have parsing
     parse_nice_to_have: bool = os.getenv("PARSE_NICE_TO_HAVE", "1") == "1"
 
-    # Extractor mode and guardrails
-    mode: str = os.getenv("EXTRACTOR_MODE", "current")  # current|all_in_one|hybrid
+    # Extractor guardrails
     strict_json: bool = os.getenv("STRICT_JSON", "1") == "1"
     max_spans_per_skill: int = int(os.getenv("MAX_SPANS_PER_SKILL", "2"))
     cap_nice_to_have: bool = os.getenv("CAP_NICE_TO_HAVE", "1") == "1"
@@ -136,7 +135,6 @@ class CareerEngineConfig:
                 "test_mode": self.extraction.test_mode,
                 "extractor_model": self.extraction.extractor_model,
                 "parse_nice_to_have": self.extraction.parse_nice_to_have,
-                "mode": self.extraction.mode,
                 "strict_json": self.extraction.strict_json,
                 "max_spans_per_skill": self.extraction.max_spans_per_skill,
                 "cap_nice_to_have": self.extraction.cap_nice_to_have,

@@ -61,9 +61,6 @@ OPENAI_API_KEY=sk-...
 # Optional: Configure extraction model
 EXTRACTOR_MODEL=gpt-4o-mini
 
-# Optional: Choose extraction mode
-EXTRACTOR_MODE=all_in_one  # or "current"
-
 # Optional: Test mode (no API calls)
 SKILL_EXTRACTOR_TEST=0  # Set to 1 for test mode
 ```

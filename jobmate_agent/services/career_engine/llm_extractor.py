@@ -293,49 +293,7 @@ Canonicalize names (e.g., React -> React.js). No prose, JSON ONLY.""",
                 "responsibilities": [],
             }
 
-    def extract_with_levels(
-        self, text: str, is_job_description: bool = False
-    ) -> Dict[str, Any]:
-        """
-        Level-aware extraction wrapper that adapts all-in-one output into
-        the legacy categorized shape.
-        """
-        aio = self.extract_all_in_one(text, is_job_description=is_job_description)
-        categorized: Dict[str, List[Dict[str, Any]]] = {"other": []}
-        for s in aio.get("skills") or []:
-            categorized["other"].append(
-                {"name": s.get("name"), "level": s.get("level")}
-            )
-
-        return {"role": None, "skills": categorized, "responsibilities": []}
-
-    def extract_skills_with_levels(
-        self, text: str, is_job_description: bool = False
-    ) -> List[Dict[str, Any]]:
-        """
-        Extract individual skills with level information as a flat list.
-        This is useful for mapping to O*NET skills.
-        """
-        enhanced_result = self.extract_with_levels(text, is_job_description)
-
-        skills_with_levels = []
-        for category, skills in enhanced_result.get("skills", {}).items():
-            for skill_data in skills:
-                skill_name = skill_data["name"]
-                level_info = skill_data["level"]
-
-                skills_with_levels.append(
-                    {
-                        "name": skill_name,
-                        "category": category,
-                        "level": level_info,
-                        "is_required": is_job_description,
-                    }
-                )
-
-        return skills_with_levels
-
-    # ---- All-in-one extractor (gated by EXTRACTOR_MODE) ----
+    # ---- All-in-one extractor ----
     def extract_all_in_one(
         self, text: str, *, is_job_description: bool
     ) -> Dict[str, Any]:

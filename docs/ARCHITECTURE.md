@@ -33,10 +33,11 @@
 
 ## 1) System Overview
 - **Frontend:** Next.js 15 app (App Router) with Auth0 integration, deployed separately or as a static export served behind the Flask API (via CORS or reverse proxy). Uses **fetch**/**Redux Toolkit** for data fetching, **Server Actions/Route Handlers** only for client‑side conveniences (no business logic duplication).
-- **Backend:** Flask app with multiple API blueprints; Python 3.11+.
+- **Backend:** Flask app with API blueprint structure under `/api/*` routes; Python 3.11+.
+- **Authentication:** Primary authentication via Auth0 JWT tokens (Bearer tokens) validated by `jwt_auth.py`. Legacy `User` model exists only for server-rendered Jinja templates (not used by Next.js frontend).
 - **AI/RAG:** LangChain pipelines (LCEL) for extraction/normalization; ChromaDB vector store for `skills_ontology` only (skill-only mode).
 - **Storage:**
-  - **PostgreSQL/SQLite** for application data (`Resume`, `JobListing`, `ResumeSkill`, `JobSkill`, `Skill`, `SkillAlias`, `SkillGapReport`, `LearningItem`, `Task`, `ProcessingRun`, etc.).
+  - **PostgreSQL/SQLite** for application data (`Resume`, `JobListing`, `Skill`, `SkillAlias`, `SkillGapReport`, `SkillGapStatus`, `PreloadedContext`, `LearningItem`, `Task`, `ProcessingRun`, `UserProfile`, etc.).
   - **ChromaDB** for O*NET skills embeddings + semantic search.
   - **S3** for uploaded files; optional local copy under `./data/uploads/` when `STORE_LOCAL_UPLOAD_COPY=1`.
 
@@ -48,11 +49,14 @@
 Core entities and relationships (see `DATA_MODEL.md` for full definitions):
 
 - **Ontology:** `Skill(skill_id, name, taxonomy_path, vector_doc_id, framework, external_id, meta_json, onet_soc_code, occupation_title, commodity_title, hot_tech, in_demand, skill_type)`, `SkillAlias(skill_id_fk, alias, meta_json)`.
-- **Resume ingest:** `Resume(file_url, parsed_json, vector_doc_id, processing_run_id, s3_bucket, s3_key, status, is_default)`.
-- **Job ingest:** `JobListing(title, description, vector_doc_id, processing_run_id, company, location, salary_min, salary_max, …)`.
-- **Reporting:** `SkillGapReport(resume_id, job_listing_id, score, matched_skills_json, missing_skills_json, weak_skills_json, processing_run_id)`.
+- **Authentication:** `UserProfile(id TEXT PK, email, name, picture, contact_*)` - Auth0 identity keyed by `sub`. Legacy `User` model exists only for templates.
+- **Resume ingest:** `Resume(file_url, parsed_json, vector_doc_id, processing_run_id, s3_bucket, s3_key, status, is_default, user_id FK → UserProfile.id)`.
+- **Job ingest:** `JobListing(title, description, vector_doc_id, company, location, salary_min, salary_max, …)`, `JobCollection(user_id FK → UserProfile.id, job_listing_id)`.
+- **Reporting:** `SkillGapReport(user_id FK → UserProfile.id, resume_id, job_listing_id, score, matched_skills_json, missing_skills_json, weak_skills_json, resume_skills_json, analysis_version, analysis_json, processing_run_id)`, `SkillGapStatus(user_id FK → UserProfile.id, job_listing_id, status)`.
+- **Context:** `PreloadedContext(user_id FK → UserProfile.id, job_listing_id, doc_type, content)` - precomputed context snippets for chat.
 - **Learning:** `LearningItem(skill_id_fk, title, url, source, est_time_min, difficulty)` + `ReportLearningItem(report_id, learning_item_id, reason)`.
 - **Ops:** `ProcessingRun(llm_model, embed_model, code_version_hash, params_json)`.
+- **Chat:** `Chat(user_id FK → UserProfile.id, title, model, timestamp)`, `ChatMessage(chat_id, role, content, timestamp)`.
 
 **Vector pointers:** `Skill.vector_doc_id` references Chroma documents (O*NET skills only in skill-only mode).
 
@@ -136,7 +140,22 @@ All responses are JSON unless `?format=csv` is used on export endpoints.
 
 > **Note:** To preserve SPEC compatibility, the route name `job_target` is kept at the API layer but maps internally to the `JobListing` entity.
 
-### 5.1 Ingest - ✅ IMPLEMENTED
+### 5.1 API Structure
+All API routes are under `/api/*` prefix and organized into blueprints:
+- `/api/chat/*` - Chat functionality (chat.py)
+- `/api/context/*` - Context management (context.py)
+- `/api/external-jobs/*` - External job fetching (external_jobs.py)
+- `/api/backend/gap/*` - Gap analysis endpoints (gap.py)
+- `/api/job-collections/*` - Job collection management (job_collections.py)
+- `/api/backend/jobs/*` - Job listings CRUD (jobListings.py)
+- `/api/langgraph/*` - LangGraph agent endpoints (langgraph.py, langgraph_dev.py)
+- `/api/backend/resume/*` - Resume upload and management (resumes.py)
+- `/api/backend/tasks/*` - Task management (tasks.py)
+- `/api/user-profile/*` - User profile management (user_profile.py)
+
+All routes require JWT authentication via `@require_jwt` decorator from `jwt_auth.py` (except public endpoints).
+
+### 5.2 Ingest - ✅ IMPLEMENTED
 - **POST `/api/backend/resume/upload`**  
   **Body:** multipart `resume_file`  
   **Returns:** `{ "resume_id": int, "message": str, "chunks_created": int, "text_length": int, "s3_key": str, "bucket": str }`
@@ -144,12 +163,14 @@ All responses are JSON unless `?format=csv` is used on export endpoints.
 - **GET `/api/backend/resume/<id>/download-url`**  
   **Returns:** `{ "download_url": str, "filename": str, "content_type": str, "file_size": int, "expires_in": int }`
 
-- Jobs are managed via the existing jobs endpoints (see docs/dev_guide/BACKEND_DEV.md); a dedicated `job_target` alias route is not present in the current API.
+- **GET/POST `/api/backend/jobs/*`** - Job listings management (see jobListings.py)
 
-### 5.2 Analysis - ○ PLANNED
-- Career Engine is implemented as a service. REST endpoints for gap analysis are pending. Planned routes: `POST /api/gap/run`, `GET /api/gap/<gap_report_id>`.
+### 5.3 Analysis - ✅ IMPLEMENTED
+- **POST `/api/backend/gap/run`** - Trigger gap analysis (background processing)
+- **GET `/api/gap/by-job/<job_id>`** - Get gap report by job ID
+- **DELETE `/api/backend/gap/by-job/<job_id>`** - Delete gap report
 
-### 5.3 Learning - ○ PLANNED
+### 5.4 Learning - ○ PLANNED
 - **POST `/api/learn/generate`**  
   **Body:** `{ "gap_report_id": int }`  
   **Returns:** `{ "learning_item_ids": [int,...] }`
@@ -161,7 +182,7 @@ All responses are JSON unless `?format=csv` is used on export endpoints.
   **Body:** `{ "learning_item_ids": [int,...] }`  
   **Returns:** `{ "added": int }`
 
-### 5.4 Export - ○ PLANNED
+### 5.5 Export - ○ PLANNED
 - **GET `/api/export`**  
   **Query:** `type=gap_report|learning_items&format=json|csv&gap_report_id=...`  
   **Returns:** JSON or CSV file.
@@ -237,53 +258,71 @@ All responses are JSON unless `?format=csv` is used on export endpoints.
 
 ```
 /                        # Project root
-├── app.py              ✓ Flask app factory + blueprint register (auth, main, dashboard, work_goal)
-├── run.py              ✓ App entry point
-├── db_create.py        ✓ Simple DB initialization
-├── extensions.py       ✓ Flask extensions (db, bcrypt)
-├── models.py           ✓ Current models: User, Goal, Task, Note, Chat, ChatMessage, Membership, UserSettings
-│                       ✓ AI models: Resume, JobListing, Skill, SkillAlias, ResumeSkill, JobSkill, 
-│                         SkillGapReport, LearningItem, ReportLearningItem, ProcessingRun
-├── requirements.txt    ✓ Current deps: Flask, SQLAlchemy, bcrypt, openai, markdown, flask_migrate
-│                       ✓ AI deps: langchain, chromadb, pypdf, python-docx, beautifulsoup4, etc.
-├── .env.example        ✓ API keys and model names
-│
-├── blueprints/         ✓ Current blueprints
-│   ├── __init__.py     ✓
-│   ├── auth.py         ✓ User authentication (login/register/logout)
-│   ├── main.py         ✓ Chat functionality (DeepSeek API integration)
-│   ├── dashboard.py    ✓ User dashboard, goals management, user center
-│   └── work_goal.py    ✓ Task management, calendar, notes
-│   └── api/            ✓ API blueprint for /api/* routes
-│       └── routes.py   ✓ Resume upload, job target, gap analysis, learning generation
-│
-├── services/           ✓ AI/RAG service layer
-│   ├── career_engine/  ✓ Complete skill-only analysis pipeline
-│   │   ├── career_engine.py ✓ Main orchestrator
-│   │   ├── chroma_client.py ✓ ChromaDB wrapper for O*NET skills
-│   │   ├── gap_analyzer.py ✓ Level-aware skill gap analysis
-│   │   ├── llm_extractor.py ✓ LLM-based skill extraction
-│   │   ├── onet_mapper.py ✓ O*NET skill mapping
-│   │   ├── report_renderer.py ✓ Markdown report generation
-│   │   └── level_estimator.py ✓ Skill level estimation
-│   ├── resume_management/ ✓ Resume processing and storage
-│   │   ├── resume_pipeline.py ✓ Complete resume processing pipeline
-│   │   ├── resume_storage_service.py ✓ S3 storage and database operations
-│   │   └── ingest.py ✓ File parsing utilities (PDF/DOCX/TXT)
-│   ├── vector_store/   ✓ ChromaDB setup and operations
-│   │   └── vector_store.py ✓ Collection management and helpers
-│   └── external_apis/  ✓ External job fetching
-│       └── job_fetcher.py ✓ LinkedIn Job Search API integration
-│
-├── templates/          ✓ Current Jinja2 templates (to be replaced by Next.js)
-│   ├── dashboard/      ✓ Dashboard, user center, privacy/terms
-│   ├── work_goal/      ✓ Work goal index, calendar, notes, today todo
-│   ├── *.html          ✓ Login, register, chat, layout, index
-│   └── partials/       ✓ Reusable template components
-│
-├── static/             ✓ Current CSS/JS assets (to be replaced by Next.js)
-│   ├── css/            ✓ Styling for all current features
-│   └── js/             ✓ Client-side functionality
+├── jobmate_agent/      # Main application package
+│   ├── app.py          ✓ Flask app factory + API blueprint registration
+│   ├── run.py          ✓ App entry point
+│   ├── extensions.py   ✓ Flask extensions (db, bcrypt, migrate)
+│   ├── jwt_auth.py     ✓ Auth0 JWT authentication middleware
+│   ├── models.py       ✓ All data models:
+│   │                   ✓ Legacy: User, Goal, Task, Note, Membership, UserSettings (templates only)
+│   │                   ✓ Auth: UserProfile (Auth0 identity)
+│   │                   ✓ Chat: Chat, ChatMessage
+│   │                   ✓ AI: Resume, JobListing, Skill, SkillAlias, SkillGapReport, SkillGapStatus
+│   │                   ✓ AI: PreloadedContext, LearningItem, ReportLearningItem, ProcessingRun
+│   │                   ✓ Collections: JobCollection
+│   │
+│   ├── blueprints/     ✓ API blueprint structure
+│   │   ├── __init__.py ✓
+│   │   └── api/        ✓ API blueprint for /api/* routes
+│   │       ├── __init__.py ✓ Blueprint registration and ChromaDB init
+│   │       ├── chat.py     ✓ Chat functionality endpoints
+│   │       ├── context.py  ✓ Context management endpoints
+│   │       ├── external_jobs.py ✓ External job fetching endpoints
+│   │       ├── gap.py      ✓ Gap analysis endpoints
+│   │       ├── job_collections.py ✓ Job collection management
+│   │       ├── jobListings.py ✓ Job listings CRUD
+│   │       ├── langgraph.py ✓ LangGraph agent endpoints
+│   │       ├── langgraph_dev.py ✓ LangGraph dev endpoints
+│   │       ├── resumes.py  ✓ Resume upload and management
+│   │       ├── tasks.py    ✓ Task management endpoints
+│   │       └── user_profile.py ✓ User profile management
+│   │
+│   ├── services/       ✓ AI/RAG service layer
+│   │   ├── career_engine/  ✓ Complete skill-only analysis pipeline
+│   │   │   ├── career_engine.py ✓ Main orchestrator
+│   │   │   ├── chroma_client.py ✓ ChromaDB wrapper for O*NET skills
+│   │   │   ├── gap_analyzer.py ✓ Level-aware skill gap analysis
+│   │   │   ├── llm_extractor.py ✓ LLM-based skill extraction
+│   │   │   ├── onet_mapper.py ✓ O*NET skill mapping
+│   │   │   ├── report_renderer.py ✓ Markdown report generation
+│   │   │   └── level_estimator.py ✓ Skill level estimation
+│   │   ├── resume_management/ ✓ Resume processing and storage
+│   │   │   ├── resume_pipeline.py ✓ Complete resume processing pipeline
+│   │   │   ├── resume_storage_service.py ✓ S3 storage and database operations
+│   │   │   └── ingest.py ✓ File parsing utilities (PDF/DOCX/TXT)
+│   │   ├── vector_store/   ✓ ChromaDB setup and operations
+│   │   │   └── vector_store.py ✓ Collection management and helpers
+│   │   ├── external_apis/  ✓ External job fetching
+│   │   │   └── external_job_fetcher.py ✓ LinkedIn Job Search API integration
+│   │   ├── context_builder.py ✓ Context building utilities
+│   │   ├── document_processor.py ✓ Document processing utilities
+│   │   └── preloader.py ✓ Preloader service
+│   │
+│   ├── templates/      ✓ Current Jinja2 templates (legacy - server-rendered only)
+│   │   ├── dashboard/  ✓ Dashboard, user center, privacy/terms
+│   │   ├── work_goal/  ✓ Work goal index, calendar, notes, today todo
+│   │   ├── *.html      ✓ Login, register, chat, layout, index
+│   │   └── partials/   ✓ Reusable template components
+│   │
+│   ├── static/         ✓ Current CSS/JS assets (legacy - to be replaced by Next.js)
+│   │   ├── css/        ✓ Styling for all current features
+│   │   └── js/         ✓ Client-side functionality
+│   │
+│   ├── migrations/     ✓ Alembic database migrations
+│   │   └── versions/   ✓ Migration scripts
+│   │
+│   └── agents/         ✓ AI agents
+│       └── gap_agent.py ✓ Gap analysis agent
 │
 ├── data/               ✓ File storage
 │   └── uploads/        ✓ Stored resume/job files
@@ -359,26 +398,21 @@ All responses are JSON unless `?format=csv` is used on export endpoints.
 
 ### Integration Notes
 
+**Authentication Architecture:**
+
+- **Primary Auth**: Auth0 JWT tokens validated by `jwt_auth.py` with `@require_jwt` decorator
+- **User Model**: `UserProfile` model (id = Auth0 `sub`) owns Resume/JobCollection/SkillGapReport entities
+- **Legacy Auth**: `User` model exists only for server-rendered Jinja templates, not used by Next.js frontend
+- **JWT Flow**: Frontend obtains JWT from Auth0, sends in `Authorization: Bearer <token>` header
+- **Hydration**: Optional `hydrate=True` parameter in `@require_jwt` fetches and upserts UserProfile from Auth0 Management API
+
 **Current Features → AI Resume System Integration:**
 
-- **User Model**: Already exists and will own Resume/JobPosting/SkillGapReport entities
-- **Task Model**: Already has `learning_item_id` field (per DATA_MODEL.md) - ready for AI-generated learning items
+- **UserProfile Model**: Owns Resume/JobCollection/SkillGapReport/SkillGapStatus entities
+- **Task Model**: Has `learning_item_id` field (per DATA_MODEL.md) - ready for AI-generated learning items
 - **Goal Model**: Provides foundation for organizing learning objectives from skill gaps
-- **Chat System**: Current DeepSeek integration can be extended for AI resume analysis interactions
-- **Work Goal Features**: Calendar and task scheduling already support the learning item → task workflow
+- **Chat System**: References UserProfile, DeepSeek integration for AI resume analysis interactions
 - **Notes System**: Can store AI-generated insights and user annotations on gap reports
-
-**Frontend Migration Strategy:**
-1. **Phase 1**: Add missing models to `models.py` (Resume, JobPosting, Skill, etc.)
-2. **Phase 2**: Create `/services/` directory with AI/RAG pipelines
-3. **Phase 3**: Add `/blueprints/api/` for REST endpoints
-4. **Phase 4**: Integrate AI features into existing UI (upload in dashboard, gap reports in work_goal)
-5. **Phase 5**: Frontend migration to Next.js (per JIRA.md Epic FE-1 through FE-11)
-   - Create `/frontend/` directory with Next.js 15 + TypeScript + TailwindCSS + shadcn/ui
-   - Migrate current Jinja2 templates to React components in `/frontend/app/`
-   - Replace current `/static/` assets with Next.js components and styling
-   - Implement AI features in new frontend structure
-   - Configure CORS or reverse proxy for Flask API integration
 
 **Next.js Frontend Structure:**
 - **App Router**: Uses Next.js 15 App Router for file-based routing

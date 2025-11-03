@@ -33,8 +33,8 @@ flowchart LR
   end
 
   subgraph Stores_Current[Current Storage (✓)]
-    SQL_Current[(SQLite: User, Goal, Task, Note, Chat, ChatMessage, Membership, UserSettings)]
-    SESSION[Flask Sessions]
+    SQL_Current[(PostgreSQL/SQLite: UserProfile (Auth0), User (legacy), Goal, Task, Note, Chat, ChatMessage, Membership, UserSettings)]
+    JWT[JWT Tokens]
   end
 
   UI_Current -->|Login/Register| AUTH
@@ -74,8 +74,8 @@ flowchart LR
   end
 
   subgraph Stores_AI[AI Storage (✓)]
-    RAW[(Object Store: PDF/Docx)]
-    SQL_AI[(PostgreSQL/SQLite: Resume, JobListing, Skill, SkillAlias, SkillGapReport, LearningItem, ProcessingRun)]
+    RAW[(Object Store: PDF/Docx - S3)]
+    SQL_AI[(PostgreSQL/SQLite: Resume, JobListing, Skill, SkillAlias, SkillGapReport, SkillGapStatus, PreloadedContext, LearningItem, ProcessingRun, UserProfile)]
     VEC[(Chroma Vector DB: skills_ontology only)]
     ONTO[(O*NET Skills Ontology + Synonyms)]
   end
@@ -101,10 +101,10 @@ flowchart LR
 ```
 
 ### Integration Points
-- **User Model**: Current User owns both current entities (Task, Goal, Note) and AI entities (Resume, JobPosting, SkillGapReport)
+- **User Model**: `UserProfile` (Auth0 identity) owns AI entities (Resume, JobCollection, SkillGapReport, SkillGapStatus, PreloadedContext). Legacy `User` model owns current entities (Task, Goal, Note) for templates only.
 - **Task Integration**: Current Task.learning_item_id links to AI-generated LearningItem
 - **Notes Integration**: Current Note system stores AI insights and user annotations
-- **Chat Integration**: Current chat system can be extended for AI resume analysis interactions
+- **Chat Integration**: Chat references `UserProfile.id`, can be extended for AI resume analysis interactions
 
 > *k* is initial K (e.g., 30–50). *k** is reranked K (e.g., 6–10).
 
@@ -114,21 +114,24 @@ flowchart LR
 
 ### Current Implementation (✓)
 
-#### A. User Authentication & Management
-1. **Registration**: User provides username, email, password → bcrypt hash → `User` row created
-2. **Login**: Username/email + password → bcrypt verification → Flask session established
-3. **Dashboard**: Session validation → user data + task/goal counts → dashboard rendered
+#### A. User Authentication & Management (✓)
+1. **Auth0 Authentication**: User authenticates via Auth0 → Next.js frontend receives JWT Access Token
+2. **JWT Validation**: Frontend sends `Authorization: Bearer <token>` header → Flask `@require_jwt` validates token via JWKS
+3. **User Profile Hydration**: Optional `hydrate=True` in `@require_jwt` → fetches user from Auth0 Management API → upserts `UserProfile` (id = Auth0 `sub`)
+4. **Dashboard**: JWT validation → user data from `UserProfile` + task/goal counts → dashboard rendered
+5. **Legacy Auth**: Legacy `User` model with bcrypt exists only for server-rendered Jinja templates (not used by Next.js)
 
-#### B. Task & Goal Management
-1. **Goal Creation**: User creates goal with title/description → `Goal` row with `user_id` FK
-2. **Task Creation**: User creates task with dates, associates with goal → `Task` row with `goal_id` FK
+#### B. Task & Goal Management (✓)
+1. **Goal Creation**: User creates goal with title/description → `Goal` row with `user_id` FK (legacy User model for templates)
+2. **Task Creation**: User creates task with dates, associates with goal → `Task` row with `goal_id` FK and optional `learning_item_id` FK
 3. **Calendar Integration**: Tasks with dates → calendar events → drag-and-drop date updates
 4. **Task Completion**: User marks task complete → `Task.done` updated → calendar refresh
 
-#### C. Notes & Chat System
+#### C. Notes & Chat System (✓)
 1. **Note Creation**: User creates note, optionally links to task → `Note` row with `task_id` FK
-2. **AI Chat**: User sends message → DeepSeek API call → streaming response → `ChatMessage` rows
+2. **AI Chat**: User sends message → DeepSeek API call → streaming response → `ChatMessage` rows (Chat references `UserProfile.id`)
 3. **Note from Chat**: User saves AI response as note → `Note` row created with AI content
+4. **PreloadedContext**: Precomputed context snippets stored in `PreloadedContext` for chat system messages
 
 ### Implemented AI Features (✓)
 
@@ -185,12 +188,17 @@ flowchart LR
 4. Respect token budgets by pruning lowest‑relevance chunks if necessary.
 
 #### F. Skill‑Gap Chain (✓ IMPLEMENTED)
-- **Inputs**: normalized `JobSkill` + `ResumeSkill` + top‑k chunks.\
+- **Inputs**: normalized skills from resume and job (computed at runtime, not persisted as `ResumeSkill`/`JobSkill` rows) + top‑k chunks.\
+- **Processing**: Background processing triggered → `SkillGapStatus.set_status("generating")` → Career Engine runs analysis
 - **Output**: `SkillGapReport` row with:
   - `matched_skills_json` (skill_id, evidence, level, confidence)\
   - `missing_skills_json` (skill_id, required_level, rationale)\
   - `weak_skills_json` (optional)\
-  - `score` = weighted coverage over `JobSkill.weight`.
+  - `resume_skills_json` (all detected resume skills with levels)\
+  - `analysis_version` (version identifier)\
+  - `analysis_json` (additional analysis metadata)\
+  - `score` = weighted coverage (0-100).
+- **Status Update**: `SkillGapStatus.set_status("ready")` → frontend polling detects status change
 - **LLM config**: structured JSON schema, temperature **0.2**, retry with `reask` on validation errors.
 
 #### G. Learning‑Items Chain (○ PLANNED)
@@ -218,21 +226,29 @@ flowchart LR
 
 ### Current Implementation (✓)
 
-#### 3.1 User Authentication Flow
+#### 3.1 User Authentication Flow (✓)
 ```mermaid
 sequenceDiagram
   participant User
-  participant UI
-  participant Auth
+  participant NextJS as Next.js Frontend
+  participant Auth0 as Auth0
+  participant Flask as Flask API
+  participant Auth0Mgmt as Auth0 Mgmt API
   participant DB
 
-  User->>UI: Login (username/email + password)
-  UI->>Auth: POST /login
-  Auth->>DB: Query User by username/email
-  DB-->>Auth: User record
-  Auth->>Auth: bcrypt.verify(password)
-  Auth->>UI: Set session + redirect to dashboard
-  UI-->>User: Dashboard with user data
+  User->>NextJS: Visit protected page
+  NextJS->>Auth0: OIDC login (redirect/callback)
+  Auth0-->>NextJS: ID token + Access token (session)
+  User->>NextJS: Trigger API request
+  NextJS->>Flask: GET /api/... (Authorization: Bearer <token>)
+  Flask->>Auth0: Fetch JWKS & validate JWT
+  alt hydrate enabled and first-time user
+    Flask->>Auth0Mgmt: GET /api/v2/users/{sub}
+    Auth0Mgmt-->>Flask: User profile
+    Flask->>DB: Upsert UserProfile
+  end
+  Flask-->>NextJS: 200 JSON
+  NextJS-->>User: Render data
 ```
 
 #### 3.2 Task Management Flow
@@ -275,21 +291,33 @@ sequenceDiagram
 #### 3.4 Analyze Resume vs JD (✓ IMPLEMENTED)
 ```mermaid
 sequenceDiagram
-  participant Script as Python Script
+  participant User
+  participant Frontend as Next.js Frontend
+  participant API as Flask API
+  participant Status as SkillGapStatus
   participant CE as Career Engine
   participant VEC as Vector DB
-  participant LLM as LLM (gpt‑5‑mini/gemini‑flash)
+  participant LLM as LLM
   participant DB as Database
 
-  Script->>CE: analyze_resume_vs_job(resume_id, job_text)
+  User->>Frontend: Save job / Trigger gap analysis
+  Frontend->>API: POST /api/job-collections/<job_id>
+  API->>Status: set_status("generating")
+  API->>Frontend: {saved, saved_at} (background processing)
+  API->>CE: analyze_resume_vs_job(user_id, resume_id, job_id) [background thread]
   CE->>VEC: search(query_from_job_skills, K=50)
   VEC-->>CE: top_50_chunks
   CE->>LLM: skill_gap(prompt, top_8, schemas, normalized skills)
   LLM-->>CE: gap_json
   CE->>DB: Save SkillGapReport
-  CE-->>Script: {gap_report, report_md}
-  
-  Note over Script,DB: Career Engine implemented, REST API pending
+  CE->>Status: set_status("ready")
+  Frontend->>API: GET /api/job-collections (polling every 5s)
+  API->>Status: get_status()
+  Status-->>API: "ready"
+  API-->>Frontend: {gap_state: "ready"}
+  Frontend->>API: GET /api/gap/by-job/<job_id>
+  API-->>Frontend: Gap report data
+  Frontend-->>User: Display gap report
 ```
 
 #### 3.5 Learning Items → Current Task System (○ PLANNED)
