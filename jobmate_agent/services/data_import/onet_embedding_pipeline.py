@@ -31,6 +31,7 @@ from jobmate_agent.services.document_processor import DocumentProcessor
 from jobmate_agent.services.data_import.onet_excel_loader import (
     ONetExcelLoader,
     ONetOccupationContext,
+    ONetTechnologySkill,
 )
 from jobmate_agent.services.data_import.onet_profile_synthesizer import (
     ONetProfileSynthesizer,
@@ -73,18 +74,24 @@ class ONetEmbeddingPipeline:
         self.stats = ONetEmbeddingStats()
 
     def run_full_pipeline(
-        self, limit_occupations: Optional[int] = None
+        self,
+        limit_occupations: Optional[int] = None,
+        skip_embeddings: bool = False,
     ) -> ONetEmbeddingStats:
         """
         Run the complete O*NET embedding pipeline.
 
         Args:
             limit_occupations: Optional limit on number of occupations to process
+            skip_embeddings: When True, skip vector generation and only seed SQL
 
         Returns:
             ONetEmbeddingStats with execution statistics
         """
         logger.info("Starting O*NET embedding pipeline...")
+
+        # Reset stats for each pipeline run
+        self.stats = ONetEmbeddingStats()
 
         try:
             # Step 1: Load and normalize data
@@ -104,7 +111,9 @@ class ONetEmbeddingPipeline:
                     logger.info(
                         f"Processing occupation {i}/{len(occupations)}: {occupation.soc_code}"
                     )
-                    self._process_occupation(occupation)
+                    self._process_occupation(
+                        occupation, skip_embeddings=skip_embeddings
+                    )
                 except Exception as e:
                     error_msg = (
                         f"Failed to process occupation {occupation.soc_code}: {e}"
@@ -127,7 +136,26 @@ class ONetEmbeddingPipeline:
 
         return self.stats
 
-    def _process_occupation(self, occupation: ONetOccupationContext) -> None:
+    def seed_sql_only(
+        self, limit_occupations: Optional[int] = None
+    ) -> ONetEmbeddingStats:
+        """
+        Seed O*NET task, technology, and job profile records into SQL without embeddings.
+
+        Args:
+            limit_occupations: Optional limit on number of occupations to process
+
+        Returns:
+            ONetEmbeddingStats with execution statistics (embedding counts will be zero)
+        """
+        logger.info("Seeding O*NET data into SQL without generating embeddings...")
+        return self.run_full_pipeline(
+            limit_occupations=limit_occupations, skip_embeddings=True
+        )
+
+    def _process_occupation(
+        self, occupation: ONetOccupationContext, skip_embeddings: bool = False
+    ) -> None:
         """
         Process a single occupation context.
 
@@ -137,7 +165,9 @@ class ONetEmbeddingPipeline:
         # Process individual task statements
         for task_index, task in enumerate(occupation.task_statements):
             try:
-                self._create_task_skill(occupation, task, task_index)
+                self._create_task_skill(
+                    occupation, task, task_index, skip_embeddings=skip_embeddings
+                )
             except Exception as e:
                 error_msg = (
                     f"Failed to create task skill for {occupation.soc_code}: {e}"
@@ -148,7 +178,9 @@ class ONetEmbeddingPipeline:
         # Process individual technology skills
         for tech_skill in occupation.technology_skills:
             try:
-                self._create_tech_skill(occupation, tech_skill)
+                self._create_tech_skill(
+                    occupation, tech_skill, skip_embeddings=skip_embeddings
+                )
             except Exception as e:
                 error_msg = (
                     f"Failed to create tech skill for {occupation.soc_code}: {e}"
@@ -158,30 +190,88 @@ class ONetEmbeddingPipeline:
 
         # Process synthesized job profile
         try:
-            self._create_job_profile(occupation)
+            self._create_job_profile(occupation, skip_embeddings=skip_embeddings)
         except Exception as e:
             error_msg = f"Failed to create job profile for {occupation.soc_code}: {e}"
             logger.warning(error_msg)
             self.stats.warnings.append(error_msg)
 
     def _create_task_skill(
-        self, occupation: ONetOccupationContext, task: str, task_index: int
+        self,
+        occupation: ONetOccupationContext,
+        task: str,
+        task_index: int,
+        skip_embeddings: bool = False,
     ) -> None:
-        """Create a task skill record and embedding."""
-        # Generate skill ID and vector doc ID
+        """Create a task skill record and optionally its embedding."""
         skill_id = f"onet.task.{occupation.soc_code}.{task_index}"
         vector_doc_id = f"skill:{skill_id}"
 
-        # Check if already exists
+        if not self._upsert_task_skill_record(
+            occupation, task, task_index, skill_id, vector_doc_id
+        ):
+            return
+
+        if skip_embeddings:
+            logger.debug(f"Seeded task skill {skill_id} without embeddings")
+            return
+
+        self._embed_task_skill(occupation, task, task_index, skill_id, vector_doc_id)
+
+    def _create_tech_skill(
+        self,
+        occupation: ONetOccupationContext,
+        tech_skill: ONetTechnologySkill,
+        skip_embeddings: bool = False,
+    ) -> None:
+        """Create a technology skill record and optionally its embedding."""
+        skill_id = f"onet.tech.{self._normalize_skill_name(tech_skill.name)}"
+        vector_doc_id = f"skill:{skill_id}"
+
+        if not self._upsert_tech_skill_record(
+            occupation, tech_skill, skill_id, vector_doc_id
+        ):
+            return
+
+        if skip_embeddings:
+            logger.debug(f"Seeded tech skill {skill_id} without embeddings")
+            return
+
+        self._embed_tech_skill(occupation, tech_skill, skill_id, vector_doc_id)
+
+    def _create_job_profile(
+        self, occupation: ONetOccupationContext, skip_embeddings: bool = False
+    ) -> None:
+        """Create a job profile record and optionally its embedding."""
+        skill_id = f"onet.profile.{occupation.soc_code}"
+        vector_doc_id = f"skill:{skill_id}"
+
+        if not self._upsert_job_profile_record(occupation, skill_id, vector_doc_id):
+            return
+
+        if skip_embeddings:
+            logger.debug(f"Seeded job profile {skill_id} without embeddings")
+            return
+
+        self._embed_job_profile(occupation, skill_id, vector_doc_id)
+
+    def _upsert_task_skill_record(
+        self,
+        occupation: ONetOccupationContext,
+        task: str,
+        task_index: int,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> bool:
+        """Insert the task skill row if missing; return True when inserted."""
         existing_skill = Skill.query.filter_by(skill_id=skill_id).first()
         if existing_skill:
             logger.debug(f"Task skill {skill_id} already exists, skipping")
-            return
+            return False
 
-        # Create skill record
         skill = Skill(
             skill_id=skill_id,
-            name=task[:200] if len(task) > 200 else task,  # Truncate if too long
+            name=task[:200] if len(task) > 200 else task,
             taxonomy_path=f"ONET/TASKS/{occupation.soc_code}",
             vector_doc_id=vector_doc_id,
             framework="ONET",
@@ -193,8 +283,17 @@ class ONetEmbeddingPipeline:
 
         db.session.add(skill)
         self.stats.task_skills_created += 1
+        return True
 
-        # Create embedding
+    def _embed_task_skill(
+        self,
+        occupation: ONetOccupationContext,
+        task: str,
+        task_index: int,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> None:
+        """Generate and persist embeddings for a task skill."""
         synthesized_task = self.synthesizer.synthesize_task_statement(
             task, occupation.occupation_title, occupation.soc_code
         )
@@ -218,19 +317,19 @@ class ONetEmbeddingPipeline:
         self.stats.task_embeddings_created += chunks_created
         logger.debug(f"Created task skill {skill_id} with {chunks_created} chunks")
 
-    def _create_tech_skill(self, occupation: ONetOccupationContext, tech_skill) -> None:
-        """Create a technology skill record and embedding."""
-        # Generate skill ID and vector doc ID
-        skill_id = f"onet.tech.{self._normalize_skill_name(tech_skill.name)}"
-        vector_doc_id = f"skill:{skill_id}"
-
-        # Check if already exists
+    def _upsert_tech_skill_record(
+        self,
+        occupation: ONetOccupationContext,
+        tech_skill: ONetTechnologySkill,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> bool:
+        """Insert the technology skill row if missing; return True when inserted."""
         existing_skill = Skill.query.filter_by(skill_id=skill_id).first()
         if existing_skill:
             logger.debug(f"Tech skill {skill_id} already exists, skipping")
-            return
+            return False
 
-        # Create skill record
         skill = Skill(
             skill_id=skill_id,
             name=tech_skill.name,
@@ -248,8 +347,16 @@ class ONetEmbeddingPipeline:
 
         db.session.add(skill)
         self.stats.tech_skills_created += 1
+        return True
 
-        # Create embedding
+    def _embed_tech_skill(
+        self,
+        occupation: ONetOccupationContext,
+        tech_skill: ONetTechnologySkill,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> None:
+        """Generate and persist embeddings for a technology skill."""
         synthesized_tech = self.synthesizer.synthesize_technology_skill(
             tech_skill, occupation.occupation_title
         )
@@ -274,19 +381,18 @@ class ONetEmbeddingPipeline:
         self.stats.tech_skill_embeddings_created += chunks_created
         logger.debug(f"Created tech skill {skill_id} with {chunks_created} chunks")
 
-    def _create_job_profile(self, occupation: ONetOccupationContext) -> None:
-        """Create a job profile record and embedding."""
-        # Generate skill ID and vector doc ID
-        skill_id = f"onet.profile.{occupation.soc_code}"
-        vector_doc_id = f"skill:{skill_id}"
-
-        # Check if already exists
+    def _upsert_job_profile_record(
+        self,
+        occupation: ONetOccupationContext,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> bool:
+        """Insert the job profile row if missing; return True when inserted."""
         existing_skill = Skill.query.filter_by(skill_id=skill_id).first()
         if existing_skill:
             logger.debug(f"Job profile {skill_id} already exists, skipping")
-            return
+            return False
 
-        # Create skill record
         skill = Skill(
             skill_id=skill_id,
             name=occupation.occupation_title,
@@ -301,8 +407,15 @@ class ONetEmbeddingPipeline:
 
         db.session.add(skill)
         self.stats.job_profiles_created += 1
+        return True
 
-        # Create embedding
+    def _embed_job_profile(
+        self,
+        occupation: ONetOccupationContext,
+        skill_id: str,
+        vector_doc_id: str,
+    ) -> None:
+        """Generate and persist embeddings for a job profile."""
         synthesized_profile = self.synthesizer.synthesize_job_profile(occupation)
         metadata = {
             "skill_id": skill_id,

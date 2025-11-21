@@ -3,6 +3,9 @@
 from jobmate_agent.extensions import db
 from datetime import datetime, timezone
 from typing import Optional
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.types import JSON, String, Text
+from pgvector.sqlalchemy import Vector  # Requires 'pip install pgvector'
 
 
 class User(db.Model):
@@ -266,6 +269,68 @@ class SkillAlias(db.Model):
 
     def __repr__(self):
         return f"<SkillAlias {self.id} - {self.alias}>"
+
+# TODO: to be implemented later, uncomment when ready
+# class Skill(db.Model):
+#     __tablename__ = 'skills'
+
+#     # --- CORE IDENTITY ---
+#     id: Mapped[int] = mapped_column(primary_key=True)
+    
+#     # The official, display-ready name (e.g., "React.js", "Python")
+#     # Indexed for fast 'Exact Match' lookups
+#     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
+
+#     # --- SEMANTIC CONTEXT (For AI) ---
+#     # Used to generate the embedding. 
+#     # "A JavaScript library for building user interfaces."
+#     # Nullable for Phase 1, but essential for Phase 2.
+#     description: Mapped[str] = mapped_column(Text, nullable=True)
+
+#     # --- CATEGORIZATION (For Filtering) ---
+#     # Helps you filter search results. 
+#     # Values: 'language', 'framework', 'tool', 'soft_skill'
+#     category: Mapped[str] = mapped_column(String(50), default="general", index=True)
+
+#     # --- VECTOR SEARCH (The AI Brain) ---
+#     # 3072 dimensions (Standard OpenAI size for text-embedding-3-large).
+#     # Nullable=True so you can run exact match logic without calculating vectors yet.
+#     embedding: Mapped[list[float]] = mapped_column(Vector(3072), nullable=True)
+
+#     # --- METADATA & RANKING ---
+#     # Verified: True = Added by Admin/O*NET. False = Auto-added by AI (needs review).
+#     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    
+#     # Popularity: How many users have this skill? 
+#     # Used for tie-breaking: If fuzzy match finds "Java" (pop:1000) vs "Javva" (pop:1), pick Java.
+#     usage_count: Mapped[int] = mapped_column(Integer, default=0)
+
+#     # Future-proofing: Store O*NET codes, alternative IDs, or raw JSON data here
+#     metadata_json: Mapped[dict] = mapped_column(JSONB, default={})
+
+#     # --- RELATIONSHIPS ---
+#     # One Skill has Many Aliases
+#     aliases = relationship("SkillAlias", back_populates="skill", cascade="all, delete-orphan")
+
+#     def __repr__(self):
+#         return f"<Skill {self.name} (Verified: {self.is_verified})>"
+
+# class SkillAlias(db.Model):
+#     __tablename__ = 'skill_aliases'
+
+#     id: Mapped[int] = mapped_column(primary_key=True)
+    
+#     # The common variation (e.g., "ReactJS", "RJS", "React JS")
+#     # Indexed because this is your most frequently searched column.
+#     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
+    
+#     # Pointer to the Real Skill
+#     skill_id: Mapped[int] = mapped_column(ForeignKey("skills.id"), nullable=False)
+    
+#     skill = relationship("Skill", back_populates="aliases")
+
+#     def __repr__(self):
+#         return f"<Alias '{self.name}' -> Skill ID {self.skill_id}>"
 
 
 class JobListing(db.Model):
