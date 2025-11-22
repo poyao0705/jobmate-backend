@@ -54,3 +54,39 @@ def create_master_graph():
 
 # Initialize the runnable graph
 master_graph = create_master_graph()
+
+# --- EXAMPLE: How to run with stream_events (for real-time UI updates) ---
+# async def demo_run():
+#     inputs = {
+#         "messages": [("user", "Analyze my resume for this python job")],
+#         "user_id": "test_user",
+#         "resume_id": "resume_123",
+#         "current_job_id": "job_456"
+#     }
+#     
+#     print("--- Starting Stream ---")
+#     async for event in master_graph.astream_events(inputs, version="v2"):
+#         kind = event["event"]
+#         
+#         # 1. Stream Tokens from LLMs
+#         if kind == "on_chat_model_stream":
+#             content = event["data"]["chunk"].content
+#             if content:
+#                 print(content, end="", flush=True)
+#                 
+#         # 2. Detect Tool Usage
+#         elif kind == "on_tool_start":
+#             print(f"\n[TOOL START] {event['name']}...")
+#             
+#         elif kind == "on_tool_end":
+#             print(f"\n[TOOL END] {event['name']} -> {event['data'].get('output')}")
+#             
+#         # 3. Detect Agent Switches (Graph Node Changes)
+#         elif kind == "on_chain_end":
+#             # This helps visualize which node just finished (Supervisor vs GapAnalyst)
+#             node_name = event["name"]
+#             if node_name in ["supervisor", "GapAnalyst", "JobHunter", "CareerCoach"]:
+#                 print(f"\n[NODE FINISHED] {node_name}")
+
+
+

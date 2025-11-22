@@ -155,5 +155,16 @@ class SkillService:
             
         return results
 
+    # TODO: backfilling skill description (from the populated description in the skill table)
+    def backfill_skill_description(self):
+        # Step 1: read from stack exchange datasource downloaded csv file
+        # Step 2: upsert to skill table with the name and description
+        pass
+
+    def backfill_skill_embedding(self):
+        # Step 1: read from skill table
+        # Step 2: update the embedding
+        pass
+
 # Singleton Instance
 skill_service = SkillService()

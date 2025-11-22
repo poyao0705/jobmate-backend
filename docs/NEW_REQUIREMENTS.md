@@ -5,7 +5,8 @@
     - add new skill
     - normalize skill
     - find similar skills
-    - backfilling skill description (from the populated description in the skill table)
+    - backfilling skill description (from the csv file)
+    - backfilling skill embedding (from the populated description in the skill table)
 
 - resume service
     - parse resume from PDF, DOCX, TXT
