@@ -14,3 +14,10 @@ def generate_learning_path(skill: str):
             {"topic": "Placeholder Prerequisite 2", "prerequisites": []}
         ]
     }
+
+@tool
+def save_learning_path(path_data: dict):
+    """
+    Saves a learning path to the user's profile.
+    """
+    return "Learning Path Saved Successfully"

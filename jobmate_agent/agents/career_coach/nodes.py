@@ -116,13 +116,14 @@ def generate_node(state: CareerCoachState):
     context = documents[0] if documents else "No context provided."
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a helpful Career Coach. Use the following context to answer the user's question. If the context is empty or irrelevant, answer from your own knowledge but mention that you didn't find specific internal data.\n\nIf the user asks for a learning path or curriculum, use the `generate_learning_path` tool."),
+        ("system", "You are a helpful Career Coach. Use the following context to answer the user's question. If the context is empty or irrelevant, answer from your own knowledge but mention that you didn't find specific internal data.\n\nIf the user asks for a learning path or curriculum, use the `generate_learning_path` tool.\nIf the user asks to save a learning path, use the `save_learning_path` tool."),
         ("human", "Context: {context} \n\n Question: {question}"),
     ])
     
     # Bind the learning path tool
+    from jobmate_agent.tools.learning_tools import generate_learning_path, save_learning_path
     llm = ChatOpenAI(model="gpt-4o", temperature=0)
-    llm_with_tools = llm.bind_tools([generate_learning_path])
+    llm_with_tools = llm.bind_tools([generate_learning_path, save_learning_path])
     
     chain = prompt | llm_with_tools
     

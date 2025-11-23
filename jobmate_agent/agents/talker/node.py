@@ -42,7 +42,7 @@ def talker_node(state: AgentState):
     # If replying, we append the response to messages so the user sees it.
     # If calling reasoner, we might not want to append a response yet, or maybe a "Thinking..." message.
     # For now, we'll store the response in a separate key or just append it if it exists.
-    
+
     updates = {
         "next_step": result["action"]
     }
