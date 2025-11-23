@@ -116,7 +116,7 @@ def generate_node(state: CareerCoachState):
     context = documents[0] if documents else "No context provided."
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a helpful Career Coach. Use the following context to answer the user's question. If the context is empty or irrelevant, answer from your own knowledge but mention that you didn't find specific internal data."),
+        ("system", "You are a helpful Career Coach. Use the following context to answer the user's question. If the context is empty or irrelevant, answer from your own knowledge but mention that you didn't find specific internal data.\n\nIf the user asks for a learning path or curriculum, use the `generate_learning_path` tool."),
         ("human", "Context: {context} \n\n Question: {question}"),
     ])
     
