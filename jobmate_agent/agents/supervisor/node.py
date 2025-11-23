@@ -5,7 +5,9 @@ from jobmate_agent.agents.schema import AgentState
 
 # Define the valid workers.
 # 'FINISH' means the system should stop and return the response to the user.
-WORKER_OPTIONS = Literal["GapAnalyst", "JobHunter", "CareerCoach", "FINISH"]
+# Define the valid workers.
+# 'FINISH' means the system should stop and return the response to the user.
+WORKER_OPTIONS = Literal["JobAgent", "CareerCoach", "FINISH"]
 
 # The System Prompt instructs the Supervisor on WHO handles WHAT.
 SUPERVISOR_SYSTEM_PROMPT = """
@@ -13,17 +15,15 @@ You are the Supervisor for the 'JobMate' AI system.
 Your job is to route the conversation to the correct specialized worker.
 
 WORKER DESCRIPTIONS:
-1. GapAnalyst:
-   - Use for: Skill gap analysis, resume reviews, "Do I fit this job?", extracting skills.
-   - Triggers: "Analyze my resume", "Compare me to this job", "What am I missing?".
+1. JobAgent (The Recruiter):
+   - GOAL: FIND the target & APPLY.
+   - CAPABILITIES: Search for jobs, Analyze fit (Gap Analysis), Tailor Resume, Generate Cover Letters.
+   - TRIGGER: "Find jobs", "Am I a good fit?", "Apply to this job", "Write a cover letter".
 
-2. JobHunter:
-   - Use for: Searching for new jobs, saving jobs, filtering listings.
-   - Triggers: "Find me python jobs", "Save this job", "Look for remote work".
-
-3. CareerCoach:
-   - Use for: General advice, soft skills, interview prep, motivation.
-   - Triggers: "How do I negotiate salary?", "Mock interview", "I feel stuck".
+2. CareerCoach (The Mentor):
+   - GOAL: CLOSE the gap & PREPARE.
+   - CAPABILITIES: Generate Learning Paths, Explain Concepts, Mock Interviews, Soft Skills Advice.
+   - TRIGGER: "Teach me React", "How do I improve my resume?", "Prepare me for this interview".
 
 RULES:
 - If the specialized worker has just finished their task and responded, route to 'FINISH' to give control back to the user.

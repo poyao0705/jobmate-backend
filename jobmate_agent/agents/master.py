@@ -2,8 +2,7 @@ from langgraph.graph import StateGraph, END
 from jobmate_agent.agents.schema import AgentState
 from jobmate_agent.agents.supervisor.node import supervisor_node
 from jobmate_agent.agents.talker.node import talker_node
-from jobmate_agent.agents.gap_analyst.graph import gap_analyst_graph
-from jobmate_agent.agents.job_hunter.graph import job_hunter_graph
+from jobmate_agent.agents.job_agent.graph import job_agent_graph
 from jobmate_agent.agents.career_coach.graph import career_coach_graph
 
 def create_master_graph():
@@ -14,8 +13,7 @@ def create_master_graph():
     workflow.add_node("Reasoner_Supervisor", supervisor_node)
     
     # Add the specialists (The Reasoners)
-    workflow.add_node("GapAnalyst", gap_analyst_graph)
-    workflow.add_node("JobHunter", job_hunter_graph)
+    workflow.add_node("JobAgent", job_agent_graph)
     workflow.add_node("CareerCoach", career_coach_graph)
 
     # 2. Entry Point
@@ -37,17 +35,16 @@ def create_master_graph():
     )
 
     # 4. The Reasoner Logic (Standard Supervisor Routing)
-    # Note: We need to ensure the supervisor node returns "GapAnalyst", "JobHunter", etc.
+    # Note: We need to ensure the supervisor node returns "JobAgent" or "CareerCoach".
     # The routing map matches the output of the supervisor LLM.
     routing_map = {
-        "GapAnalyst": "GapAnalyst",
-        "JobHunter": "JobHunter",
+        "JobAgent": "JobAgent",
         "CareerCoach": "CareerCoach",
         "FINISH": END
     }
 
     workflow.add_conditional_edges(
-        "supervisor",                # Start at Supervisor
+        "Reasoner_Supervisor",       # Start at Supervisor
         lambda x: x["next_agent"],   # Read this field
         routing_map                  # Go to matching node
     )
@@ -56,9 +53,8 @@ def create_master_graph():
     # After a worker finishes, ALWAYS go back to Supervisor.
     # The Supervisor checks if the job is done or if another worker is needed.
     
-    workflow.add_edge("GapAnalyst", "supervisor")
-    workflow.add_edge("JobHunter", "supervisor")
-    workflow.add_edge("CareerCoach", "supervisor")
+    workflow.add_edge("JobAgent", "Reasoner_Supervisor")
+    workflow.add_edge("CareerCoach", "Reasoner_Supervisor")
 
     return workflow.compile()
 

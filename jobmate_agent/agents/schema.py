@@ -16,7 +16,7 @@ class AgentState(TypedDict):
 
     # --- Routing Logic ---
     # The Supervisor writes to this field to decide who goes next.
-    # Options: "GapAnalyst", "JobHunter", "CareerCoach", "FINISH"
+    # Options: "JobAgent", "CareerCoach", "FINISH"
     next_agent: str
 
     # --- Shared Business Context ---
