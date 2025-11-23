@@ -1,34 +1,44 @@
 from langgraph.graph import StateGraph, END
-from .schema import AgentState
-from .supervisor import supervisor_node
-
-# --- IMPORT SUB-AGENTS ---
+from jobmate_agent.agents.schema import AgentState
+from jobmate_agent.agents.supervisor.node import supervisor_node
+from jobmate_agent.agents.talker.node import talker_node
 from jobmate_agent.agents.gap_analyst.graph import gap_analyst_graph
 from jobmate_agent.agents.job_hunter.graph import job_hunter_graph
 from jobmate_agent.agents.career_coach.graph import career_coach_graph
 
 def create_master_graph():
-    """
-    Constructs the top-level Supervisor Graph.
-    """
     workflow = StateGraph(AgentState)
 
-    # --- 1. Add The Supervisor Node ---
-    workflow.add_node("supervisor", supervisor_node)
-
-    # --- 2. Add Worker Nodes ---
-    # In LangGraph, a compiled graph can be a node in another graph!
+    # 1. Add Nodes
+    workflow.add_node("Talker", talker_node)
+    workflow.add_node("Reasoner_Supervisor", supervisor_node)
     
+    # Add the specialists (The Reasoners)
     workflow.add_node("GapAnalyst", gap_analyst_graph)
     workflow.add_node("JobHunter", job_hunter_graph)
     workflow.add_node("CareerCoach", career_coach_graph)
 
-    # --- 3. Define Entry Point ---
-    # The conversation always starts with the Supervisor deciding who goes first.
-    workflow.set_entry_point("supervisor")
+    # 2. Entry Point
+    workflow.set_entry_point("Talker")
 
-    # --- 4. Define Routing Logic (The Switch) ---
-    # This map matches the 'next_agent' string to the Node Name.
+    # 3. The "Brain Check" Edge
+    def check_talker_decision(state):
+        if state.get("next_step") == "CALL_REASONER":
+            return "Reasoner_Supervisor"
+        return END # If "REPLY", we are done! Talker handled it.
+
+    workflow.add_conditional_edges(
+        "Talker",
+        check_talker_decision,
+        {
+            "Reasoner_Supervisor": "Reasoner_Supervisor",
+            END: END
+        }
+    )
+
+    # 4. The Reasoner Logic (Standard Supervisor Routing)
+    # Note: We need to ensure the supervisor node returns "GapAnalyst", "JobHunter", etc.
+    # The routing map matches the output of the supervisor LLM.
     routing_map = {
         "GapAnalyst": "GapAnalyst",
         "JobHunter": "JobHunter",

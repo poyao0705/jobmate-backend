@@ -25,3 +25,4 @@ class AgentState(TypedDict):
     user_id: str
     resume_id: Optional[int]      # The resume currently being discussed
     current_job_id: Optional[int] # The job the user is looking at
+    next_step: Optional[str] # For Talker decision (REPLY vs CALL_REASONER)
