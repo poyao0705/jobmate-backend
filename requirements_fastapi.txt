@@ -1,0 +1,50 @@
+# FastAPI Requirements
+# Core FastAPI dependencies
+fastapi==0.115.5
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.5
+pydantic-settings==2.7.1
+
+# Database
+sqlalchemy==2.0.36
+alembic==1.17.0
+psycopg2-binary==2.9.10
+pgvector==0.4.0
+
+# Authentication
+pyjwt==2.10.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+requests==2.32.3
+
+# AI/ML Dependencies
+openai==1.59.5
+anthropic==0.43.2
+langchain==0.3.14
+langchain-openai==0.2.14
+langchain-community==0.3.13
+langgraph==0.2.60
+chromadb==1.2.0
+
+# Document Processing
+pypdf==5.1.0
+python-docx==1.1.2
+beautifulsoup4==4.14.2
+openpyxl==3.1.5
+
+# AWS
+boto3==1.40.59
+botocore==1.40.59
+
+# Utilities
+python-dotenv==1.0.1
+aiofiles==25.1.0
+httpx==0.28.1
+
+# Existing dependencies that are still needed
+numpy==2.2.1
+pandas==2.2.3
+scikit-learn==1.6.1
+matplotlib==3.10.0
