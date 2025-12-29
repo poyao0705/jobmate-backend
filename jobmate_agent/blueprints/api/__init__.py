@@ -27,6 +27,11 @@ def on_load(state):
 
 
 # Health check / ping endpoint
+@api_bp.route("/ping", methods=["GET"])
+def ping():
+    """Unprotected health check endpoint to verify server is alive."""
+    return jsonify({"ok": True, "message": "pong"})
+
 @api_bp.route("/ping-protected", methods=["GET"])
 @require_jwt(hydrate=True)
 def ping_protected():
