@@ -16,7 +16,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import database and extensions AFTER loading environment
-from jobmate_agent.extensions_fastapi import SessionLocal, engine, Base
+from jobmate_agent.extensions_fastapi import engine
+from sqlmodel import SQLModel
 
 
 def _resolve_database_uri() -> str:
@@ -67,7 +68,7 @@ async def lifespan(app: FastAPI):
             logging.error(f"Failed to initialize Chroma collections: {exc}")
     
     # Create database tables
-    Base.metadata.create_all(bind=engine)
+    SQLModel.metadata.create_all(bind=engine)
     
     logging.info("FastAPI application started successfully")
     

@@ -1,10 +1,12 @@
 """FastAPI extensions and database setup for Jobmate.Agent."""
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from dotenv import load_dotenv
+from sqlmodel import create_engine, Session, SQLModel
 from typing import Generator
 from passlib.context import CryptContext
+
+# Load environment variables
+load_dotenv()
 
 # Password hashing context
 bcrypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -32,11 +34,10 @@ engine = create_engine(
     pool_pre_ping=True,
 )
 
-# Session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base class for models
-Base = declarative_base()
+# Session factory for backward compatibility with jwt_auth_fastapi
+def SessionLocal():
+    """Create a new database session (backward compatibility)."""
+    return Session(engine)
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -44,11 +45,8 @@ def get_db() -> Generator[Session, None, None]:
     Dependency for getting database sessions.
     Use in FastAPI routes with: db: Session = Depends(get_db)
     """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    with Session(engine) as session:
+        yield session
 
 
 def hash_password(password: str) -> str:

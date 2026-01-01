@@ -1,7 +1,6 @@
 """FastAPI router for job listing endpoints."""
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlmodel import Session, select, func
 from typing import Tuple, Dict, Any, Optional
 
 from jobmate_agent.extensions_fastapi import get_db
@@ -26,26 +25,40 @@ async def get_job_listings(
 ):
     """Get all active job listings with pagination and filtering"""
     try:
-        # Build query with filters
-        query = db.query(JobListing)
+        logger.info(f"Fetching jobs: page={page}, limit={limit}")
+        
+        # Build query with filters using SQLModel syntax
+        statement = select(JobListing).where(JobListing.is_active == True)
         
         # Apply filters if provided
         if job_type:
-            query = query.filter(JobListing.job_type == job_type)
+            statement = statement.where(JobListing.job_type == job_type)
         if location:
-            query = query.filter(JobListing.location.ilike(f"%{location}%"))
+            statement = statement.where(JobListing.location.ilike(f"%{location}%"))
         if company:
-            query = query.filter(JobListing.company.ilike(f"%{company}%"))
+            statement = statement.where(JobListing.company.ilike(f"%{company}%"))
         
-        # Get total count
-        total = query.count()
+        # Get total count (faster query)
+        count_statement = select(func.count()).select_from(JobListing).where(JobListing.is_active == True)
+        if job_type:
+            count_statement = count_statement.where(JobListing.job_type == job_type)
+        if location:
+            count_statement = count_statement.where(JobListing.location.ilike(f"%{location}%"))
+        if company:
+            count_statement = count_statement.where(JobListing.company.ilike(f"%{company}%"))
+        
+        total = db.exec(count_statement).one()
+        logger.info(f"Total jobs found: {total}")
         
         # Calculate pagination
-        total_pages = (total + limit - 1) // limit
+        total_pages = (total + limit - 1) // limit if total > 0 else 1
         offset = (page - 1) * limit
         
-        # Get paginated results
-        jobs = query.offset(offset).limit(limit).all()
+        # Get paginated results with ordering
+        statement = statement.order_by(JobListing.created_at.desc()).offset(offset).limit(limit)
+        jobs = db.exec(statement).all()
+        
+        logger.info(f"Retrieved {len(jobs)} jobs")
         
         # Convert to dict format
         job_list = []

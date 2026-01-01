@@ -1,12 +1,12 @@
 """FastAPI router for job collection endpoints."""
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from typing import Tuple, Dict, Any
 from datetime import datetime
 
 from jobmate_agent.extensions_fastapi import get_db
 from jobmate_agent.jwt_auth_fastapi import get_current_user_with_profile
-from jobmate_agent.models_fastapi import JobCollection, JobListing
+from jobmate_agent.models_fastapi import JobCollection, JobListing, Resume, SkillGapReport
 
 router = APIRouter()
 
@@ -21,10 +21,25 @@ async def get_job_collections(
     
     Args:
         include_details: If True, includes full job listing details via JOIN.
-                        If False (default), returns only IDs and timestamps.
+    
+    Always includes gap_state and has_gap fields (like Flask version).
     """
     jwt_payload, user_profile = user_data
     user_id = jwt_payload.get("sub")
+    
+    # Get user's default resume for gap report checks (always check)
+    default_resume = db.query(Resume).filter_by(
+        user_id=user_id,
+        is_default=True
+    ).first()
+    
+    gap_job_ids = set()
+    if default_resume:
+        # Get job IDs that have gap reports
+        gap_reports = db.query(SkillGapReport.job_listing_id).filter_by(
+            resume_id=default_resume.id
+        ).distinct().all()
+        gap_job_ids = {job_id for (job_id,) in gap_reports}
     
     if include_details:
         # JOIN with job_listings to include full job details
@@ -35,52 +50,64 @@ async def get_job_collections(
             .all()
         )
         
-        return {
-            "collections": [
-                {
-                    "id": col.id,
-                    "job_id": col.job_listing_id,
-                    "job_listing_id": col.job_listing_id,
-                    "added_at": col.added_at.isoformat() if col.added_at else None,
-                    "job": {
-                        "id": job.id,
-                        "title": job.title,
-                        "company": job.company,
-                        "location": job.location,
-                        "job_type": job.job_type,
-                        "description": job.description,
-                        "requirements": job.requirements,
-                        "salary_min": job.salary_min,
-                        "salary_max": job.salary_max,
-                        "salary_currency": job.salary_currency,
-                        "external_url": job.external_url,
-                        "company_logo_url": job.company_logo_url,
-                        "company_website": job.company_website,
-                        "required_skills": job.required_skills,
-                        "preferred_skills": job.preferred_skills,
-                        "is_remote": job.is_remote,
-                        "date_posted": job.date_posted.isoformat() if job.date_posted else None,
-                        "date_expires": job.date_expires.isoformat() if job.date_expires else None,
-                    },
-                }
-                for col, job in results
-            ]
-        }
+        collections_data = []
+        for col, job in results:
+            job_data = {
+                "id": col.id,
+                "job_id": col.job_listing_id,
+                "job_listing_id": col.job_listing_id,
+                "added_at": col.added_at.isoformat() if col.added_at else None,
+                "job": {
+                    "id": job.id,
+                    "title": job.title,
+                    "company": job.company,
+                    "location": job.location,
+                    "job_type": job.job_type,
+                    "description": job.description,
+                    "requirements": job.requirements,
+                    "salary_min": job.salary_min,
+                    "salary_max": job.salary_max,
+                    "salary_currency": job.salary_currency,
+                    "external_url": job.external_url,
+                    "company_logo_url": job.company_logo_url,
+                    "company_website": job.company_website,
+                    "required_skills": job.required_skills,
+                    "preferred_skills": job.preferred_skills,
+                    "is_remote": job.is_remote,
+                    "date_posted": job.date_posted.isoformat() if job.date_posted else None,
+                    "date_expires": job.date_expires.isoformat() if job.date_expires else None,
+                },
+            }
+            
+            # Always add gap state (like Flask version)
+            has_gap = job.id in gap_job_ids
+            job_data["gap_state"] = "ready" if has_gap else "none"
+            job_data["has_gap"] = has_gap
+            
+            collections_data.append(job_data)
+        
+        return {"collections": collections_data}
     else:
-        # Simple query without JOIN (current behavior)
+        # Simple query without JOIN
         collections = db.query(JobCollection).filter_by(user_id=user_id).all()
         
-        return {
-            "collections": [
-                {
-                    "id": col.id,
-                    "job_id": col.job_listing_id,
-                    "job_listing_id": col.job_listing_id,
-                    "added_at": col.added_at.isoformat() if col.added_at else None,
-                }
-                for col in collections
-            ]
-        }
+        collections_data = []
+        for col in collections:
+            col_data = {
+                "id": col.id,
+                "job_id": col.job_listing_id,
+                "job_listing_id": col.job_listing_id,
+                "added_at": col.added_at.isoformat() if col.added_at else None,
+            }
+            
+            # Always add gap state (like Flask version)
+            has_gap = col.job_listing_id in gap_job_ids
+            col_data["gap_state"] = "ready" if has_gap else "none"
+            col_data["has_gap"] = has_gap
+            
+            collections_data.append(col_data)
+        
+        return {"collections": collections_data}
 
 
 @router.get("/job-collections/{job_listing_id}/status")

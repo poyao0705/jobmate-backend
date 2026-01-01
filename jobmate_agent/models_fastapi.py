@@ -1,168 +1,168 @@
 # models_fastapi.py
 """
-SQLAlchemy models compatible with FastAPI.
-These models use SQLAlchemy Core with declarative_base instead of Flask-SQLAlchemy.
+SQLModel models for FastAPI.
+Clean, type-safe ORM models with integrated Pydantic validation.
 """
 
-from jobmate_agent.extensions_fastapi import Base
-from datetime import datetime, timezone
-from typing import Optional
-from sqlalchemy import Column, Integer, String, Text, Boolean, Date, DateTime, Float, ForeignKey, JSON
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlmodel import SQLModel, Field, Relationship
+from datetime import datetime, date
+from typing import Optional, List, Dict, Any
+from sqlalchemy import Column, JSON, DateTime, String as SQLString, Text as SQLText
+from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
 
 
-class User(Base):
+class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(80), unique=True, nullable=False)
-    email = Column(String(120), unique=True, nullable=False)
-    password_hash = Column(String(200), nullable=False)
-    is_premium = Column(Boolean, default=False, nullable=False)
-    membership_plan = Column(String(50), default="free")
-    membership_renewal_date = Column(Date)
-    email_notifications = Column(Boolean, default=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(max_length=80, unique=True, nullable=False, index=True)
+    email: str = Field(max_length=120, unique=True, nullable=False, index=True)
+    password_hash: str = Field(max_length=200, nullable=False)
+    is_premium: bool = Field(default=False, nullable=False)
+    membership_plan: str = Field(default="free", max_length=50)
+    membership_renewal_date: Optional[date] = None
+    email_notifications: bool = Field(default=True)
 
     def __repr__(self):
         return f"<User {self.username}>"
 
 
-class Goal(Base):
+class Goal(SQLModel, table=True):
     __tablename__ = "goals"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    title = Column(String(200), nullable=False)
-    description = Column(Text, nullable=True)
-    created_at = Column(DateTime, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(nullable=False)
+    title: str = Field(max_length=200, nullable=False)
+    description: Optional[str] = Field(default=None, sa_column=Column(SQLText))
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
 
-    tasks = relationship("Task", back_populates="goal", cascade="all, delete-orphan")
+    tasks: List["Task"] = Relationship(back_populates="goal", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
     def __repr__(self):
         return f"<Goal {self.id} - {self.title}>"
 
 
-class Task(Base):
+class Task(SQLModel, table=True):
     __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    goal_id = Column(Integer, ForeignKey("goals.id"), nullable=True)
-    title = Column(String(200), nullable=False)
-    description = Column(Text, nullable=True)
-    start_date = Column(Date, nullable=True)
-    end_date = Column(Date, nullable=True)
-    done = Column(Boolean, default=False, nullable=False)
-    priority = Column(Integer, nullable=True)
-    learning_item_id = Column(Integer, nullable=True)
-    created_at = Column(DateTime, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(nullable=False)
+    goal_id: Optional[int] = Field(default=None, foreign_key="goals.id")
+    title: str = Field(max_length=200, nullable=False)
+    description: Optional[str] = Field(default=None, sa_column=Column(SQLText))
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    done: bool = Field(default=False, nullable=False)
+    priority: Optional[int] = None
+    learning_item_id: Optional[int] = None
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
 
-    goal = relationship("Goal", back_populates="tasks")
-    notes = relationship("Note", back_populates="task", cascade="all, delete-orphan")
+    goal: Optional["Goal"] = Relationship(back_populates="tasks")
+    notes: List["Note"] = Relationship(back_populates="task", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
     def __repr__(self):
         status = "Done" if self.done else "Pending"
         return f"<Task {self.id} - {self.title} ({status})>"
 
 
-class Note(Base):
+class Note(SQLModel, table=True):
     __tablename__ = "notes"
     
-    id = Column(Integer, primary_key=True)
-    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True)
-    user_id = Column(Integer, nullable=False)
-    content = Column(Text, default="", nullable=True)
-    created_at = Column(DateTime, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    task_id: Optional[int] = Field(default=None, foreign_key="tasks.id")
+    user_id: int = Field(nullable=False)
+    content: Optional[str] = Field(default="", sa_column=Column(SQLText))
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
 
-    task = relationship("Task", back_populates="notes")
+    task: Optional["Task"] = Relationship(back_populates="notes")
 
     def __repr__(self):
         return f"<Note {self.id}>"
 
 
-class Chat(Base):
+class Chat(SQLModel, table=True):
     __tablename__ = "chats"
     
-    id = Column(Integer, primary_key=True)
-    title = Column(String(255), nullable=True)
-    timestamp = Column(DateTime, nullable=True)
-    user_id = Column(String, ForeignKey("user_profiles.id"), nullable=True)
-    model = Column(String(50), nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: Optional[str] = Field(default=None, max_length=255)
+    timestamp: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    user_id: Optional[str] = Field(default=None, foreign_key="user_profiles.id")
+    model: Optional[str] = Field(default=None, max_length=50)
     
-    messages = relationship("Message", back_populates="chat", cascade="all, delete-orphan")
+    messages: List["Message"] = Relationship(back_populates="chat", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
     def __repr__(self):
         return f"<Chat {self.id} - {self.title}>"
 
 
-class Message(Base):
+class Message(SQLModel, table=True):
     __tablename__ = "messages"
     
-    id = Column(Integer, primary_key=True)
-    chat_id = Column(Integer, ForeignKey("chats.id"), nullable=False)
-    role = Column(String(50), nullable=False)
-    content = Column(Text, nullable=False)
-    timestamp = Column(DateTime, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    chat_id: int = Field(foreign_key="chats.id", nullable=False)
+    role: str = Field(max_length=50, nullable=False)
+    content: str = Field(sa_column=Column(SQLText, nullable=False))
+    timestamp: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
 
-    chat = relationship("Chat", back_populates="messages")
+    chat: Optional["Chat"] = Relationship(back_populates="messages")
 
     def __repr__(self):
         return f"<Message {self.id} - {self.role}>"
 
 
-class UserProfile(Base):
+class UserProfile(SQLModel, table=True):
     __tablename__ = "user_profiles"
     
-    id = Column(String, primary_key=True)  # Auth0 sub
-    email = Column(String, nullable=True)
-    email_verified = Column(Boolean, nullable=True)
-    name = Column(String, nullable=True)
-    picture = Column(String, nullable=True)
-    contact_name = Column(String, nullable=True)
-    contact_email = Column(String, nullable=True)
-    contact_phone_number = Column(String, nullable=True)
-    contact_location = Column(String, nullable=True)
+    id: str = Field(primary_key=True)  # Auth0 sub
+    email: Optional[str] = None
+    email_verified: Optional[bool] = None
+    name: Optional[str] = None
+    picture: Optional[str] = None
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone_number: Optional[str] = None
+    contact_location: Optional[str] = None
 
-    resumes = relationship("Resume", back_populates="user")
-    skill_gap_reports = relationship("SkillGapReport", back_populates="user")
+    resumes: List["Resume"] = Relationship(back_populates="user")
+    skill_gap_reports: List["SkillGapReport"] = Relationship(back_populates="user")
 
     def __repr__(self):
         return f"<UserProfile {self.id} - {self.email}>"
 
 
-class ProcessingRun(Base):
+class ProcessingRun(SQLModel, table=True):
     """Legacy model from Flask for backward compatibility."""
     __tablename__ = "processing_runs"
     
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    llm_model = Column(String(100), nullable=True)
-    embed_model = Column(String(100), nullable=True)
-    code_version_hash = Column(String(100), nullable=True)
-    params_json = Column(JSON, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow, sa_column=Column(DateTime))
+    llm_model: Optional[str] = Field(default=None, max_length=100)
+    embed_model: Optional[str] = Field(default=None, max_length=100)
+    code_version_hash: Optional[str] = Field(default=None, max_length=100)
+    params_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
 
     def __repr__(self):
         return f"<ProcessingRun {self.id}>"
 
 
-class Resume(Base):
+class Resume(SQLModel, table=True):
     __tablename__ = "resumes"
     
-    id = Column(Integer, primary_key=True)
-    user_id = Column(String, ForeignKey("user_profiles.id"), nullable=False)
-    file_url = Column(String, nullable=True)
-    s3_bucket = Column(String, nullable=True)
-    s3_key = Column(String, nullable=True)
-    original_filename = Column(String, nullable=True)
-    file_size = Column(Integer, nullable=True)  # BigInt in PostgreSQL but Integer works
-    content_type = Column(String, nullable=True)
-    parsed_json = Column(JSON, nullable=True)
-    vector_doc_id = Column(String, nullable=True)
-    processing_run_id = Column(Integer, ForeignKey("processing_runs.id"), nullable=False)
-    is_default = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime(timezone=True), nullable=True)
-    status = Column(String, nullable=False, default="processing")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: str = Field(foreign_key="user_profiles.id", nullable=False, index=True)
+    file_url: Optional[str] = None
+    s3_bucket: Optional[str] = None
+    s3_key: Optional[str] = None
+    original_filename: Optional[str] = None
+    file_size: Optional[int] = None
+    content_type: Optional[str] = None
+    parsed_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    vector_doc_id: Optional[str] = None
+    processing_run_id: int = Field(foreign_key="processing_runs.id", nullable=False)
+    is_default: bool = Field(default=False, nullable=False)
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    status: str = Field(default="processing", nullable=False)
     
     # Backward compatibility properties
     @property
@@ -173,40 +173,40 @@ class Resume(Base):
     def bucket(self):
         return self.s3_bucket
 
-    user = relationship("UserProfile", back_populates="resumes")
-    skill_gap_reports = relationship("SkillGapReport", back_populates="resume")
+    user: Optional["UserProfile"] = Relationship(back_populates="resumes")
+    skill_gap_reports: List["SkillGapReport"] = Relationship(back_populates="resume")
 
     def __repr__(self):
         return f"<Resume {self.id} - {self.filename}>"
 
 
-class JobListing(Base):
+class JobListing(SQLModel, table=True):
     __tablename__ = "job_listings"
     
-    id = Column(Integer, primary_key=True)
-    title = Column(String(200), nullable=False)
-    company = Column(String(200), nullable=False)
-    location = Column(String(200), nullable=True)
-    job_type = Column(String(50), nullable=True)
-    description = Column(Text, nullable=True)
-    requirements = Column(Text, nullable=True)
-    salary_min = Column(Integer, nullable=True)
-    salary_max = Column(Integer, nullable=True)
-    salary_currency = Column(String(10), nullable=True)
-    external_url = Column(String(500), nullable=True)
-    external_id = Column(String(200), nullable=True)
-    source = Column(String(100), nullable=True)
-    company_logo_url = Column(String(500), nullable=True)
-    company_website = Column(String(200), nullable=True)
-    required_skills = Column(JSON, nullable=True)
-    preferred_skills = Column(JSON, nullable=True)
-    is_active = Column(Boolean, nullable=False, default=True)
-    is_remote = Column(Boolean, nullable=False, default=False)
-    date_posted = Column(DateTime, nullable=True)
-    date_expires = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=True)
-    updated_at = Column(DateTime, nullable=True)
-    vector_doc_id = Column(String(200), nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(max_length=200, nullable=False)
+    company: str = Field(max_length=200, nullable=False)
+    location: Optional[str] = Field(default=None, max_length=200)
+    job_type: Optional[str] = Field(default=None, max_length=50)
+    description: Optional[str] = Field(default=None, sa_column=Column(SQLText))
+    requirements: Optional[str] = Field(default=None, sa_column=Column(SQLText))
+    salary_min: Optional[int] = None
+    salary_max: Optional[int] = None
+    salary_currency: Optional[str] = Field(default=None, max_length=10)
+    external_url: Optional[str] = Field(default=None, max_length=500)
+    external_id: Optional[str] = Field(default=None, max_length=200)
+    source: Optional[str] = Field(default=None, max_length=100)
+    company_logo_url: Optional[str] = Field(default=None, max_length=500)
+    company_website: Optional[str] = Field(default=None, max_length=200)
+    required_skills: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
+    preferred_skills: Optional[List[str]] = Field(default=None, sa_column=Column(JSON))
+    is_active: bool = Field(default=True, nullable=False)
+    is_remote: bool = Field(default=False, nullable=False)
+    date_posted: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    date_expires: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    updated_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    vector_doc_id: Optional[str] = Field(default=None, max_length=200)
     
     # Backward compatibility aliases
     @property
@@ -226,61 +226,61 @@ class JobListing(Base):
         return f"<JobListing {self.id} - {self.title}>"
 
 
-class Skill(Base):
+class Skill(SQLModel, table=True):
     __tablename__ = "skills"
     
-    id = Column(Integer, primary_key=True)
-    skill_id = Column(String, nullable=False)  # stable slug
-    name = Column(String, nullable=False)
-    taxonomy_path = Column(String, nullable=False)
-    vector_doc_id = Column(String, nullable=False)
-    framework = Column(String, nullable=False, default="ONET")
-    external_id = Column(String, nullable=True)
-    meta_json = Column(JSON, nullable=True)
-    created_at = Column(DateTime, nullable=True)
-    onet_soc_code = Column(String(10), nullable=True)
-    occupation_title = Column(String(150), nullable=True)
-    commodity_title = Column(String(150), nullable=True)
-    hot_tech = Column(Boolean, nullable=False, default=False)
-    in_demand = Column(Boolean, nullable=False, default=False)
-    skill_type = Column(String(50), nullable=True, default="skill")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    skill_id: str = Field(nullable=False)  # stable slug
+    name: str = Field(nullable=False)
+    taxonomy_path: str = Field(nullable=False)
+    vector_doc_id: str = Field(nullable=False)
+    framework: str = Field(default="ONET", nullable=False)
+    external_id: Optional[str] = None
+    meta_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime))
+    onet_soc_code: Optional[str] = Field(default=None, max_length=10)
+    occupation_title: Optional[str] = Field(default=None, max_length=150)
+    commodity_title: Optional[str] = Field(default=None, max_length=150)
+    hot_tech: bool = Field(default=False, nullable=False)
+    in_demand: bool = Field(default=False, nullable=False)
+    skill_type: Optional[str] = Field(default="skill", max_length=50)
 
     def __repr__(self):
         return f"<Skill {self.id} - {self.name}>"
 
 
-class SkillGapReport(Base):
+class SkillGapReport(SQLModel, table=True):
     __tablename__ = "skill_gap_reports"
     
-    id = Column(Integer, primary_key=True)
-    resume_id = Column(Integer, ForeignKey("resumes.id"), nullable=False)
-    job_listing_id = Column(Integer, ForeignKey("job_listings.id"), nullable=False)
-    matched_skills_json = Column(JSON, nullable=False)
-    missing_skills_json = Column(JSON, nullable=False)
-    weak_skills_json = Column(JSON, nullable=True)
-    score = Column(Float, nullable=False)
-    report_note_id = Column(Integer, nullable=True)
-    processing_run_id = Column(Integer, ForeignKey("processing_runs.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), nullable=True)
-    user_id = Column(String, ForeignKey("user_profiles.id"), nullable=False)
-    resume_skills_json = Column(JSON, nullable=True)
-    analysis_version = Column(String, nullable=True)
-    analysis_json = Column(JSON, nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    resume_id: int = Field(foreign_key="resumes.id", nullable=False)
+    job_listing_id: int = Field(foreign_key="job_listings.id", nullable=False)
+    matched_skills_json: Dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
+    missing_skills_json: Dict[str, Any] = Field(sa_column=Column(JSON, nullable=False))
+    weak_skills_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    score: float = Field(nullable=False)
+    report_note_id: Optional[int] = None
+    processing_run_id: int = Field(foreign_key="processing_runs.id", nullable=False)
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    user_id: str = Field(foreign_key="user_profiles.id", nullable=False)
+    resume_skills_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
+    analysis_version: Optional[str] = None
+    analysis_json: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON))
 
-    user = relationship("UserProfile", back_populates="skill_gap_reports")
-    resume = relationship("Resume", back_populates="skill_gap_reports")
+    user: Optional["UserProfile"] = Relationship(back_populates="skill_gap_reports")
+    resume: Optional["Resume"] = Relationship(back_populates="skill_gap_reports")
 
     def __repr__(self):
         return f"<SkillGapReport {self.id}>"
 
 
-class JobCollection(Base):
+class JobCollection(SQLModel, table=True):
     __tablename__ = "job_collections"
     
-    id = Column(Integer, primary_key=True)
-    user_id = Column(String, ForeignKey("user_profiles.id"), nullable=False)
-    job_listing_id = Column(Integer, ForeignKey("job_listings.id"), nullable=False)
-    added_at = Column(DateTime(timezone=True), nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: str = Field(foreign_key="user_profiles.id", nullable=False)
+    job_listing_id: int = Field(foreign_key="job_listings.id", nullable=False)
+    added_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True)))
 
     def __repr__(self):
-        return f"<JobCollection {self.id} - User:{self.user_id} Job:{self.job_id}>"
+        return f"<JobCollection {self.id} - User:{self.user_id} Job:{self.job_listing_id}>"

@@ -8,6 +8,7 @@ pydantic-settings==2.7.1
 
 # Database
 sqlalchemy==2.0.36
+sqlmodel==0.0.22
 alembic==1.17.0
 psycopg2-binary==2.9.10
 pgvector==0.4.0

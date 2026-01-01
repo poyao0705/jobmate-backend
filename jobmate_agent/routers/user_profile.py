@@ -1,6 +1,6 @@
 """FastAPI router for user profile endpoints."""
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from typing import Tuple, Dict, Any
 
 from jobmate_agent.extensions_fastapi import get_db

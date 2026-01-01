@@ -2,7 +2,7 @@
 FastAPI router for resume-related endpoints.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from sqlalchemy.orm import Session
+from sqlmodel import Session
 from typing import List, Tuple, Dict, Any
 
 from jobmate_agent.extensions_fastapi import get_db
