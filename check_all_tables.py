@@ -10,40 +10,29 @@ load_dotenv()
 uri = os.getenv("DATABASE_PROD")
 engine = create_engine(uri)
 
-# Tables to check
-tables_to_check = [
-    'user_profiles', 
-    'resumes', 
-    'job_listings',
-    'tasks',
-    'goals',
-    'skill_gap_reports',
-    'skills',
-    'chats',
-    'messages'
-]
-
 print("=" * 80)
-print("PostgreSQL Schema Report")
+print("PostgreSQL Schema Report - ALL TABLES")
 print("=" * 80)
 
 with engine.connect() as conn:
-    for table_name in tables_to_check:
-        # Check if table exists
-        result = conn.execute(text(f"""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = '{table_name}'
-            )
-        """))
-        exists = result.scalar()
+    # First, get all table names from the database
+    result = conn.execute(text("""
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+    """))
+    
+    all_tables = [row[0] for row in result]
+    
+    print(f"\nFound {len(all_tables)} tables in database\n")
+    
+    for table_name in all_tables:
+        # Get row count
+        row_count_result = conn.execute(text(f"SELECT COUNT(*) FROM {table_name}"))
+        row_count = row_count_result.scalar()
         
-        if not exists:
-            print(f"\n❌ Table '{table_name}' DOES NOT EXIST")
-            continue
-            
-        print(f"\n✓ Table: {table_name}")
+        print(f"\n✓ Table: {table_name} ({row_count:,} rows)")
         print("-" * 80)
         
         # Get columns
